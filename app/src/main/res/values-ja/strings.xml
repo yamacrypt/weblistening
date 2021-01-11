@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Web小説を聴こう</string>
+    <string name="title_home">ライブラリ</string>
+    <string name="title_dashboard">検索</string>
+    <string name="file_change_broadcast">com.yamacrypt.webaudionovel.ui.library.file_change_broadcast</string>
+    <string name="change_speed">再生速度の変更</string>
+    <string name="change_pitch">音の高さの変更</string>
+    <string name="change_language">読み上げ言語</string>
+    <string name="title_notifications">設定</string>
+    <string name="author">作者について</string>
+    <string name="otherapps">開発者の他のアプリ</string>
+    <string name="yomi">読み登録</string>
+    <string name="donwload">ダウンロード</string>
+    <string name="download_start">ダウンロード開始</string>
+    <string name="explain_main">検索画面から読みたい小説をダウンロードしよう！</string>
+    <string name="explain_sub">まだ小説がダウンロードされていません</string>
+    <string name="review_text" >レビュー</string>
+</resources>

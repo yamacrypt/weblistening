@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Listen-Webnovel </string>
+    <string name="title_home">Library</string>
+    <string name="title_dashboard">Search</string>
+    <string name="file_change_broadcast">com.yamacrypt.webaudionovel.ui.library.file_change_broadcast</string>
+    <string name="change_speed">PlayingSpeed</string>
+    <string name="change_pitch">Pitch</string>
+    <string name="change_language">Speaking Language</string>
+    <string name="title_notifications">Setting</string>
+    <string name="author">Developer</string>
+    <string name="otherapps">OtherApps</string>
+    <string name="review_text" >Review</string>
+    <string name="interstitial_ad_unit_id" translatable="false">ca-app-pub-8447999230890893/8960958088</string>
+    <string name="app_id" translatable="false">ca-app-pub-8447999230890893~2126288121</string>
+    <string name="yomi">Dictionary</string>
+    <string name="donwload">download</string>
+    <string name="download_start">download starting</string>
+    <string name="explain_main">Lets Download new novels from Search View！</string>
+    <string name="explain_sub">No novels</string>
+</resources>

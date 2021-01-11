@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    tools:context="com.yamacrypt.webaudionovel.MainActivity">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60sp">
+
+        <ImageView
+            android:layout_width="200sp"
+            android:layout_height="200sp"
+            android:background="#dddddd" />
+
+        <TextView
+            android:id="@+id/novelText"
+            android:layout_width="200sp"
+            android:layout_height="200sp"
+            android:textSize="20sp"
+            android:text="TextView" />
+
+    </FrameLayout>
+
+    <SeekBar
+        android:id="@+id/positionBar"
+        android:layout_width="300sp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30sp" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/elapsedTimeLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40sp"
+            android:text="00:00:00" />
+
+        <TextView
+            android:id="@+id/remainingTimeLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="200sp"
+            android:text="-01:00:00" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50sp"
+        android:layout_marginTop="20sp"
+        android:orientation="horizontal">
+
+        <Space
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.35" />
+
+        <Button
+            android:id="@+id/resetBtn"
+            android:layout_width="30sp"
+            android:layout_height="30sp"
+            android:background="@drawable/button_state2"
+            android:foreground="@drawable/reset"
+            android:onClick="resetBtnClick"
+            android:stateListAnimator="@null" />
+
+        <Space
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.05" />
+
+        <Button
+            android:id="@+id/playBtn"
+            android:layout_width="50sp"
+            android:layout_height="50sp"
+            android:background="@drawable/button_state2"
+            android:foreground="@drawable/playicon"
+            android:onClick="playBtnClick"
+            android:stateListAnimator="@null" />
+        <Space
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.05" />
+
+        <Button
+            android:id="@+id/endBtn"
+            android:layout_width="30sp"
+            android:layout_height="30sp"
+            android:background="@drawable/button_state2"
+            android:foreground="@drawable/end"
+            android:onClick="endBtnClick"
+            android:stateListAnimator="@null" />
+
+        <Space
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.35" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40sp"
+        android:gravity="center"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="18sp"
+            android:layout_height="18sp"
+            android:src="@drawable/sound" />
+
+        <SeekBar
+            android:id="@+id/volumeBar"
+            android:layout_width="300sp"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:progress="50" />
+
+        <ImageView
+            android:layout_width="26sp"
+            android:layout_height="26sp"
+            android:src="@drawable/sound2" />
+    </LinearLayout>
+
+</LinearLayout>

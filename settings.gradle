@@ -1,0 +1,2 @@
+include ':app'
+rootProject.name = "Web小説を聴こう"
