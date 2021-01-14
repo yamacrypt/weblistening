@@ -15,4 +15,5 @@
     <string name="explain_main">検索画面から読みたい小説をダウンロードしよう！</string>
     <string name="explain_sub">まだ小説がダウンロードされていません</string>
     <string name="review_text" >レビュー</string>
+    <string name="isTitleSpeaking" translatable="false">タイトルの読み上げ</string>
 </resources>

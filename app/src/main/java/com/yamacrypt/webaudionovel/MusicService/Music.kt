@@ -33,7 +33,12 @@ object MusicLibrary {
         }
         return null
     }
-
+    fun getStoryIndexModel():StoryIndexModel?{
+        if(this::storyIndexModel.isInitialized) {
+            return storyIndexModel;
+        }
+        return null
+    }
     fun getMetadata(context: Context): MediaMetadataCompat? {
         val c=FileController(context)
         val meta:MediaMetadataCompat

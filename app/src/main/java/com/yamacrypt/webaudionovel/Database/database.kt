@@ -10,6 +10,7 @@ import com.yamacrypt.webaudionovel.DataStore
 import com.yamacrypt.webaudionovel.FileController
 import com.yamacrypt.webaudionovel.PlayList
 import com.yamacrypt.webaudionovel.ui.library.common.FileType
+import com.yamacrypt.webaudionovel.ui.library.models.BookMark
 import com.yamacrypt.webaudionovel.ui.library.urlfragment.LibraryItemModel
 import com.yamacrypt.webaudionovel.ui.library.utils.getAllFilesFromRoot
 import java.io.File
@@ -19,11 +20,12 @@ abstract class BaseDB(applicationContext:Context) {
 
     protected lateinit var tableName:String;
     protected lateinit var initsql:String;
+    protected lateinit var upgradesql:String;
     val applicationContext:Context=applicationContext;
-    val dbVersion=1
+    var dbVersion=1
     var dbName = "weblisteningDB.db"
     fun loadHelper():DBHelper {
-        val dbHelper = DBHelper(applicationContext, dbName, null, dbVersion,tableName,initsql);
+        val dbHelper =DBHelper(applicationContext, dbName, null, dbVersion,tableName,initsql,upgradesql);
         return dbHelper;
     }
     fun insertData(obj: DBModel)  {
@@ -52,18 +54,15 @@ abstract class BaseDB(applicationContext:Context) {
 }
 
 enum class DBTableName{
-    storyindex,update_check
-}
-class UpdateCheckDB(applicationContext: Context):BaseDB(applicationContext){
-    init{
-        tableName="UpdateCheck"
-        initsql="create table if not exists $tableName(url TEXT PRIMARY KEY , updating INTEGER)";
-    }
+    storyindex,bookmark
 }
 class StoryIndexDB(applicationContext:Context) : BaseDB(applicationContext){
     init {
+        dbVersion=2;
         tableName="StoryIndex";
         initsql="create table if not exists $tableName(parent_path TEXT , path TEXT,url TEXT PRIMARY KEY , story_index INTEGER, novel_name TEXT,link TEXT,language TEXT)";
+        upgradesql="ALTER TABLE $tableName ADD COLUMN isNew INTEGER DEFAULT 1";
+
     }
    /* fun insertData(obj:StoryIndexModel) {
         try {
@@ -81,7 +80,7 @@ class StoryIndexDB(applicationContext:Context) : BaseDB(applicationContext){
             val database = dbHelper.writableDatabase
 
             database.insertOrThrow(tableName, null, obj.toContentValues())
-          //  database.close()
+            database.close()
         }catch(exception: Exception) {
             updateData(obj);
         }
@@ -162,6 +161,11 @@ class StoryIndexDB(applicationContext:Context) : BaseDB(applicationContext){
         try {
             while(cursor.moveToNext()) {
                 if(DEBUG_MODE) {
+                    var isNew=0
+                    try {
+                       isNew= cursor.getInt(cursor.getColumnIndex("isNew"))
+                    } catch (e: Exception) {
+                    }
                     val hoge: StoryIndexModel = StoryIndexModel(
                         path = cursor.getString(cursor.getColumnIndex("path")),
                         parent_path = cursor.getString(cursor.getColumnIndex("parent_path")),
@@ -169,7 +173,8 @@ class StoryIndexDB(applicationContext:Context) : BaseDB(applicationContext){
                         url = cursor.getString(cursor.getColumnIndex("url")),
                         link = cursor.getString(cursor.getColumnIndex("link")),
                         language = cursor.getString(cursor.getColumnIndex("language")),
-                        novel_name = cursor.getString(cursor.getColumnIndex("novel_name"))
+                        novel_name = cursor.getString(cursor.getColumnIndex("novel_name")),
+                        isNew = isNew
                     )
                     res.add(hoge);
                 }
@@ -183,7 +188,7 @@ class StoryIndexDB(applicationContext:Context) : BaseDB(applicationContext){
             }
         } finally {
             cursor.close()
-
+            database.close()
         }
         return  ArrayList(pathls) ;
     }
@@ -200,6 +205,11 @@ class StoryIndexDB(applicationContext:Context) : BaseDB(applicationContext){
             var index=0
             while(cursor.moveToNext()) {
                // if(DEBUG_MODE) {
+                    var isNew=0
+                    try {
+                        isNew= cursor.getInt(cursor.getColumnIndex("isNew"))
+                    } catch (e: Exception) {
+                    }
                     val hoge = StoryIndexModel(
                         path = cursor.getString(cursor.getColumnIndex("path")),
                         parent_path = cursor.getString(cursor.getColumnIndex("parent_path")),
@@ -207,7 +217,8 @@ class StoryIndexDB(applicationContext:Context) : BaseDB(applicationContext){
                         url = cursor.getString(cursor.getColumnIndex("url")),
                         link = cursor.getString(cursor.getColumnIndex("link")),
                         language = cursor.getString(cursor.getColumnIndex("language")),
-                        novel_name = cursor.getString(cursor.getColumnIndex("novel_name"))
+                        novel_name = cursor.getString(cursor.getColumnIndex("novel_name")),
+                        isNew = isNew
                     )
                    // res.add(hoge);
                 //}
@@ -278,20 +289,20 @@ class StoryIndexDB(applicationContext:Context) : BaseDB(applicationContext){
         }
         return ArrayList(urls)
     }
-    fun getPARENT(url:String):String{
+    fun getPARENTURL(url:String):String{
         if(url=="root")
             throw java.lang.Exception()//return DataStore.getShortCutFile(applicationContext,"").path
         var res=""
+        var parentURL=""
         try {
             val dbHelper =loadHelper();
-            val database = dbHelper.writableDatabase
+            val database = dbHelper.readableDatabase
 
             val whereClauses = "url = ?"
             val whereArgs = arrayOf(url)
 
 
             val cursor=database.rawQuery("SELECT * FROM $tableName WHERE url=?", arrayOf(url))//(tableName, whereClauses, whereArgs)
-            database.close()
             try{
                 if(cursor.moveToNext()) {
                     val parent = cursor.getString(cursor.getColumnIndex("parent_path"))
@@ -303,11 +314,25 @@ class StoryIndexDB(applicationContext:Context) : BaseDB(applicationContext){
                 cursor.close()
                 //Log.e("getPATH", exception.toString())
             }
+
+            val cursor2=database.rawQuery("SELECT * FROM $tableName WHERE path=?", arrayOf(File(res).name))//(tableName, whereClauses, whereArgs)
+            try{
+                if(cursor2.moveToNext()) {
+                    val parent = cursor2.getString(cursor2.getColumnIndex("url"))
+                    val path = cursor2.getString(cursor2.getColumnIndex("path"))
+                    parentURL= parent
+                }
+            }
+            finally{
+                database.close()
+                cursor2.close()
+                //Log.e("getPATH", exception.toString())
+            }
         }
         catch (e:java.lang.Exception){
             Log.e("getPATH", e.toString())
         }
-        return res
+        return parentURL
     }
     fun getPATH(url:String):String{
         if(url=="root")
@@ -315,7 +340,7 @@ class StoryIndexDB(applicationContext:Context) : BaseDB(applicationContext){
         var res=""
         try {
             val dbHelper =loadHelper();
-            val database = dbHelper.writableDatabase
+            val database = dbHelper.readableDatabase
 
             val whereClauses = "url = ?"
             val whereArgs = arrayOf(url)
@@ -330,6 +355,7 @@ class StoryIndexDB(applicationContext:Context) : BaseDB(applicationContext){
             }
             finally{
                 cursor.close()
+                database.close()
                 //Log.e("getPATH", exception.toString())
             }
         }
@@ -348,6 +374,11 @@ class StoryIndexDB(applicationContext:Context) : BaseDB(applicationContext){
         val cursor:Cursor=database.rawQuery("SELECT * FROM $tableName WHERE url = ? ", arrayOf(url))// (tableName, whereClauses, whereArgs)
         try {
             if(cursor.moveToNext()) {
+                var isNew=0
+                try {
+                    isNew= cursor.getInt(cursor.getColumnIndex("isNew"))
+                } catch (e: Exception) {
+                }
                 res = StoryIndexModel(
                     path = cursor.getString(cursor.getColumnIndex("path")),
                     parent_path = cursor.getString(cursor.getColumnIndex("parent_path")),
@@ -355,7 +386,8 @@ class StoryIndexDB(applicationContext:Context) : BaseDB(applicationContext){
                     url = cursor.getString(cursor.getColumnIndex("url")),
                     link = cursor.getString(cursor.getColumnIndex("link")),
                     language = cursor.getString(cursor.getColumnIndex("language")),
-                    novel_name = cursor.getString(cursor.getColumnIndex("novel_name"))
+                    novel_name = cursor.getString(cursor.getColumnIndex("novel_name")),
+                    isNew = isNew
                 )
                 //res=cursor.getString(cursor.getColumnIndex("url"))
             }
@@ -455,13 +487,63 @@ class StoryIndexDB(applicationContext:Context) : BaseDB(applicationContext){
     }
     //tableName=""
 }
+class BookMarkDB (applicationContext:Context) : BaseDB(applicationContext){
+    init {
+        dbName = "BookMarkDB.db"
+        tableName="BookMark";
+        initsql="create table if not exists $tableName(path TEXT,startindex INTEGER,position INTEGER,rootpath TEXT PRIMARY KEY)";
+        upgradesql=""
+    }
 
+    fun insertAndUpdate(obj:DBDataForBookMark){
+        val dbHelper = loadHelper();
+        val database = dbHelper.writableDatabase
+        try {
+
+
+            database.replaceOrThrow(tableName, null, obj.toContentValues())
+
+        }catch(exception: Exception) {
+
+        }
+        database.close()
+
+    }
+    fun getByKey(rootpath:String): BookMark? {
+        val dbHelper =loadHelper();
+        val database = dbHelper.writableDatabase
+
+        val whereClauses = "rootpath = ? "
+
+        lateinit var  bookmark:BookMark
+        val cursor:Cursor=database.rawQuery("SELECT * FROM $tableName WHERE rootpath = ?", arrayOf(rootpath))// (tableName, whereClauses, whereArgs)
+        try {
+            if(cursor.moveToNext()) {
+               val path=cursor.getString(cursor.getColumnIndex("path"))
+                val startindex=cursor.getInt(cursor.getColumnIndex("startindex"))
+                val position=cursor.getInt(cursor.getColumnIndex("position"))
+                bookmark= BookMark(path,startindex,rootpath,position)
+                //val path=cursor.getString(cursor.getColumnIndex("rootpath"))
+
+            }
+        } finally {
+            cursor.close()
+            database.close()
+        }
+        try {
+            return bookmark
+        } catch (e: Exception) {
+            return null
+        }
+    }
+}
 class DBProvider(applicationContext:Context){
      val applicationContext:Context=applicationContext;
      companion object {
          fun of(dbname: DBTableName,applicationContext:Context):BaseDB  {
              when(dbname){
                  DBTableName.storyindex->return  StoryIndexDB(applicationContext);
+                 DBTableName.bookmark->return BookMarkDB(applicationContext)
                  else-> error("invalid DBTableName");
              }
          }
@@ -470,16 +552,17 @@ class DBProvider(applicationContext:Context){
      var dbName = "weblisteningDB"
      //val tableName=tableName
 }
-class DBHelper(context: Context, databaseName:String, factory: SQLiteDatabase.CursorFactory?, version: Int,tableName:String,initsql:String) : SQLiteOpenHelper(context, databaseName, factory, version) {
+class DBHelper(context: Context, databaseName:String, factory: SQLiteDatabase.CursorFactory?, version: Int,tableName:String,initsql:String,upgradesql:String) : SQLiteOpenHelper(context, databaseName, factory, version) {
     val tableName=tableName;
     val initsql=initsql;
+    val upgradesql=upgradesql;
     override fun onCreate(database: SQLiteDatabase?) {
         database?.execSQL(initsql);
     }
 
     override fun onUpgrade(database: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         if (oldVersion < newVersion) {
-            database?.execSQL("alter table $tableName add column deleteFlag integer default 0")
+            database?.execSQL(upgradesql)
         }
     }
 }

@@ -108,6 +108,15 @@
 
             </LinearLayout>
 
+            <Switch
+                android:id="@+id/isTitleSpeakingSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:background="@drawable/button_state"
+                android:textAllCaps="false"
+                android:stateListAnimator="@null"
+                android:text="@string/isTitleSpeaking" />
             <Button
                 android:id="@+id/review_button"
                 android:layout_width="match_parent"
@@ -131,6 +140,8 @@
                 android:textAllCaps="false"
 
                 android:textColor="@color/colorText" />
+
+
 
 
         </LinearLayout>

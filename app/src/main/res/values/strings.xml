@@ -17,4 +17,5 @@
     <string name="download_start">download starting</string>
     <string name="explain_main">Lets Download new novels from Search View！</string>
     <string name="explain_sub">No novels</string>
+    <string name="isTitleSpeaking">Reading out the title</string>
 </resources>

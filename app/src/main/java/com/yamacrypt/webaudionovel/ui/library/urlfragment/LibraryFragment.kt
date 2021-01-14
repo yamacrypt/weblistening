@@ -5,6 +5,7 @@ package com.yamacrypt.webaudionovel.ui.library.urlfragment
 
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Handler
@@ -21,13 +22,12 @@ import com.yamacrypt.webaudionovel.DataStore
 import com.yamacrypt.webaudionovel.Database.DBProvider
 import com.yamacrypt.webaudionovel.Database.DBTableName
 import com.yamacrypt.webaudionovel.Database.StoryIndexDB
+import com.yamacrypt.webaudionovel.PlayList
 import com.yamacrypt.webaudionovel.R
 import com.yamacrypt.webaudionovel.ui.library.fileservice.FileChangeBroadcastReceiver
 import com.yamacrypt.webaudionovel.ui.library.models.BookMark_Open
 import kotlinx.android.synthetic.main.fragment_files_list.*
-import kotlinx.android.synthetic.main.tool_bar.*
 import kotlinx.android.synthetic.main.tool_bar.view.*
-import java.io.File
 import kotlin.concurrent.thread
 
 
@@ -60,6 +60,7 @@ class LibraryFragment : Fragment(){
              .apply(block).build()*/
         fun build2(block: Builder.() -> Unit) = Builder()
             .apply(block).build2()
+
     }
 
     class Builder {
@@ -117,6 +118,7 @@ class LibraryFragment : Fragment(){
             updateDate()
         }
     }
+
     //lateinit var menuitem:MenuItem
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
@@ -125,21 +127,42 @@ class LibraryFragment : Fragment(){
         val db=  DBProvider.of(DBTableName.storyindex,requireContext()) as StoryIndexDB
         val PATH=db.getPATH(URL)
         val bookmark=BookMark_Open(PATH,requireContext())
-        if(bookmark.path!=""){
-            menuitem.isEnabled = true
-            menuitem.isVisible = true
+        menuitem.isEnabled = true
+        menuitem.isVisible = true
+        if(bookmark!=null&&URL!="root"){
+           menuitem.icon = resources.getDrawable(R.drawable.bookmark);
+
+            menuitem.setOnMenuItemClickListener {
+
+                mCallback.onBookMark(PATH);
+                true;
+            }
+
             Log.d("ENABLE","TRUE")
+        }
+        else if(bookmark!=null&&URL=="root"){
+            menuitem.icon = resources.getDrawable(R.drawable.continueicon);
+            menuitem.setOnMenuItemClickListener {
+
+                try {
+                    val  db : StoryIndexDB = DBProvider.of(DBTableName.storyindex,requireContext()) as StoryIndexDB;
+                    //val files=db.getsortedAllfromparent(bookMark.rootpath)
+                    //val bk=BookMark_Open(URL,requireContext())
+                    //val parent=File(bookmark.path).parent+"/"
+                   val parent=db.getPARENTURL(bookmark.path)
+                    val ls=db.getsortedAllurlsfromParenturl(parent!!)
+                    PlayList.setup(ls,parent)
+                    mCallback.onBookMark(PATH);
+                } catch (e: Exception) {
+                }
+                true;
+            }
+
+            Log.d("ENABLE", "FALSE")
         }
         else{
             menuitem.isEnabled = false
             menuitem.isVisible = false
-            Log.d("ENABLE","FALSE")
-        }
-
-        menuitem.setOnMenuItemClickListener {
-
-            mCallback.onBookMark(PATH);
-            true;
         }
         val reloaditem=menu.findItem(R.id.library_update)
         val check=URL!="root"&& mToolbar.toolbar_progress_bar?.isVisible==false
@@ -246,9 +269,9 @@ class LibraryFragment : Fragment(){
         val runnable= Runnable {
             val items = getLibraryItemsFromURL(URL, requireContext())
             if (items.isEmpty()) {
-                emptyFolderLayout.visibility = View.VISIBLE
+                emptyFolderLayout?.visibility = View.VISIBLE
             } else {
-                emptyFolderLayout.visibility = View.INVISIBLE
+                emptyFolderLayout?.visibility = View.INVISIBLE
             }
             // val ls=files.map{ it ->it.path }
             mFilesAdapter.updateData(items)

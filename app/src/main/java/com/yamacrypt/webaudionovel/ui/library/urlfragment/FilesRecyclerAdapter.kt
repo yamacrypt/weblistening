@@ -65,6 +65,10 @@ class LibraryItemsRecyclerAdapter : RecyclerView.Adapter<LibraryItemsRecyclerAda
                 //itemView.totalSizeTextView.visibility = View.VISIBLE
                 // itemView.totalSizeTextView.text = "${String.format("%.2f", fileModel.sizeInMB)} mb"
             }
+            if(fileModel.model.isNew==1)
+                itemView.isNewTextView.visibility=View.VISIBLE//fileModel.model.isNew
+            else
+                itemView.isNewTextView.visibility=View.INVISIBLE
         }
     }
 }

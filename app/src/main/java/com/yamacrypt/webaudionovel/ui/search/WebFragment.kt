@@ -36,7 +36,7 @@ import kotlin.concurrent.thread
 
 
 class WebFragment:Fragment() {
-    lateinit var htmlfactory:HTMLFactory
+    //lateinit var htmlfactory:HTMLFactory
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?, savedInstanceState: Bundle?
@@ -54,14 +54,14 @@ class WebFragment:Fragment() {
             .apply(block).build()
     }
     class Builder {
-        var mode:Int = 0
+        var defaulturl:String = ""
         fun build(): Bundle {
             val args = Bundle()
-            args.putInt(WebFragment.ARG_PATH, mode)
+            args.putString(WebFragment.ARG_PATH, defaulturl)
             return args
         }
     }
-    var defaulturl:String=""
+    var defaulturl:String?=""
     //var MODE=0
     val yomou_mode: Int = 1
     val kakuyomu_mode = 2
@@ -70,12 +70,12 @@ class WebFragment:Fragment() {
     val mnlt_mode = 5
     val mid_mode = 6
     fun Init(){
-        val mode=arguments?.getInt(ARG_PATH)
+        defaulturl=arguments?.getString(ARG_PATH)
         //htmlfactory=get_Factory(mode)
-        if (mode != null) {
+        /*if (mode != null) {
             //MODE=mode
-        }
-        when(mode){
+        }*/
+        /*when(mode){
             YOMOU->{
                 htmlfactory=NarouFactory()
                // defaulturl=YOMOU_URL
@@ -94,9 +94,9 @@ class WebFragment:Fragment() {
             }
            MID ->{ htmlfactory= MIDFactory()
            }
-        }
+        }*/
 
-        defaulturl=htmlfactory.get_defaulturl()
+       // defaulturl=htmlfactory.get_defaulturl()
     }
 
 
@@ -115,6 +115,7 @@ class WebFragment:Fragment() {
 
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 val webUrl = search_wevview?.url
+                val htmlfactory=HTMLFactory.from(url)
                 val check=htmlfactory.downloadable(webUrl)
                 menuitem.isVisible=check;
                 menuitem.isEnabled=check;
@@ -132,12 +133,12 @@ class WebFragment:Fragment() {
 
        // val defaulturl=arguments?.getString(ARG_PATH)
         if (defaulturl != null) {
-            webView.loadUrl(defaulturl)
+            webView.loadUrl(defaulturl!!)
         }
         val mToolbar: Toolbar =requireActivity().findViewById(R.id.tool_bar)
         (activity as AppCompatActivity?)!!.setSupportActionBar(mToolbar);
         mToolbar.inflateMenu(R.menu.search_menu);
-      mToolbar.setNavigationIcon(R.drawable.ic_dialog_close_dark)
+        mToolbar.setNavigationIcon(R.drawable.ic_group_collapse_13)
         //mToolbar.setNavigationIcon(R.drawable.abc_vector_)
         mToolbar.setNavigationOnClickListener {
             val navController =
@@ -256,7 +257,7 @@ class WebFragment:Fragment() {
     //val ignore = HashSet<String>().add("<ruby>")
     private fun SaveNovels(url: String?): Boolean {
        thread {
-           val  threadfactory=htmlfactory
+           val  threadfactory=HTMLFactory.from(url!!)
            val threadcontext=context
            Filesave(threadfactory,threadcontext,url)
        }
@@ -308,10 +309,10 @@ class WebFragment:Fragment() {
         val downloader= FileController(threadcontext)
         val convertedurl=DataStore.getConvertedURL(url)
         val novelfile= DataStore.getNovelFile(threadcontext,convertedurl)
-        val titlefile= DataStore.getShortCutFile(threadcontext,title,folder)
+        //val titlefile= DataStore.getShortCutFile(threadcontext,title,folder)
         val db = DBProvider.of(DBTableName.storyindex, requireContext()) as StoryIndexDB
 
-        downloader.WriteNovel(novelfile,stringList,htmlfactory.get_language())
+        downloader.WriteNovel(novelfile,stringList,threadfactory.get_language())
         //val sc= FileController.ShortCut(title,"",convertedurl,stringList!!.size,htmlfactory.get_language())
         //downloader.WriteShortCut(titlefile,sc)
         db.insert_and_update(
@@ -323,14 +324,15 @@ class WebFragment:Fragment() {
 
     }
     fun Save(url:String?,threadfactory:HTMLFactory,threadcontext: Context?){
+
         val title=threadfactory.getTitle()
        // val author=threadfactory.getAuthor()
         val stringList=threadfactory.getTexts()
         val downloader= FileController(threadcontext)
         val convertedurl=DataStore.getConvertedURL(url)
         val novelfile= DataStore.getNovelFile(threadcontext,convertedurl)
-        val titlefile= DataStore.getShortCutFile(threadcontext,title)
-        downloader.WriteNovel(novelfile,stringList,htmlfactory.get_language())
+        //val titlefile= DataStore.getShortCutFile(threadcontext,title)
+        downloader.WriteNovel(novelfile,stringList,threadfactory.get_language())
         //val sc= FileController.ShortCut(title,"",convertedurl,stringList!!.size,htmlfactory.get_language())
         //downloader.WriteShortCut(titlefile,sc)
         val db = DBProvider.of(DBTableName.storyindex, requireContext()) as StoryIndexDB

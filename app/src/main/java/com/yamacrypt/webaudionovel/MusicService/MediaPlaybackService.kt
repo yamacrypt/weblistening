@@ -21,11 +21,16 @@ import androidx.media.AudioFocusRequestCompat
 import androidx.media.AudioManagerCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.session.MediaButtonReceiver
+import com.yamacrypt.webaudionovel.Database.DBProvider
+import com.yamacrypt.webaudionovel.Database.DBTableName
+import com.yamacrypt.webaudionovel.Database.StoryIndexDB
 import com.yamacrypt.webaudionovel.PlayList
 import com.yamacrypt.webaudionovel.R
 import com.yamacrypt.webaudionovel.TTSController
+import com.yamacrypt.webaudionovel.ui.library.fileservice.FileChangeBroadcastReceiver
 import com.yamacrypt.webaudionovel.ui.library.models.BookMark
 import com.yamacrypt.webaudionovel.ui.library.models.BookMark_Save
+import java.lang.Exception
 import kotlin.concurrent.thread
 import androidx.media.app.NotificationCompat as MediaNotificationCompat
 
@@ -45,6 +50,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             mediaSession.controller.transportControls.pause()
         }
     }
+   
     private val audioFocusRequest = AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN)
         .setAudioAttributes(AudioAttributesCompat.Builder()
             .setUsage(AudioAttributesCompat.USAGE_MEDIA)
@@ -66,6 +72,12 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             }
         }
         .build()
+    private fun updateContentOfCurrentFragment() {
+        val broadcastIntent = Intent()
+        broadcastIntent.action = applicationContext.getString(R.string.file_change_broadcast)
+        broadcastIntent.putExtra(FileChangeBroadcastReceiver.EXTRA_PATH,"update")
+        sendBroadcast(broadcastIntent)
+    }
     //private val mediaPlayer = MediaPlayer()
    lateinit var ttscontroller:TTSController//=TTSController();//=TTSController(applicationContext)
     private val callback = object : MediaSessionCompat.Callback() {
@@ -78,9 +90,14 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             }
         }
 
+        override fun onRewind() {
+            ttscontroller.move(-1)
+        }
+
         override fun onFastForward() {
             //menuitem.setEnabled(false)
-            ttscontroller.reset()
+            ttscontroller.move(1)
+           /* ttscontroller.reset()
             val bookmark = BookMark(
                 PlayList.getPlayingPath(),
                ttscontroller.currentIndex,
@@ -88,7 +105,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 PlayList.getCurrent_number()
             )
             BookMark_Save(bookmark, applicationContext) //BookMark_Save()
-
+*/
             //menuitem.setIcon(R.drawable.checkicon)
 
            /* val timer = Timer()
@@ -110,69 +127,112 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         }
 
         override fun onSkipToPrevious() {
-            ttscontroller.reset()
+           
+            try {
+                ttscontroller.back()//reset()
+                mediaSession.controller.transportControls.prepare()
+                mediaSession.controller.transportControls.play()
+            } catch (e: Exception) {
+            }
         }
        // override fun on
         override fun onSkipToNext() {
-            ttscontroller.next()
-            mediaSession.controller.transportControls.prepare()
-            mediaSession.controller.transportControls.play()
+           try {
+               ttscontroller.next()
+               mediaSession.controller.transportControls.prepare()
+               mediaSession.controller.transportControls.play()
+           } catch (e: Exception) {
+           }
            // ttscontroller.setup(MusicLibrary.getTTS_Item(baseContext))
            // MusicLibrary.setdata(File(path),0);
            // TTSService.ttsController.setup(item);
             //super.onSkipToNext()
         }
         override fun onPrepare() {
-            setNewState(PlaybackStateCompat.STATE_PAUSED)
+
           //  ttscontroller.setContext(baseContext)//=TTSController(applicationContext)
 
-            mediaSession.setMetadata(MusicLibrary.getMetadata(baseContext))
-            val  item:tts_Item?=MusicLibrary.getTTS_Item(baseContext)
-            if (item != null) {
-                ttscontroller.setup(item)
+            try {
+                setNewState(PlaybackStateCompat.STATE_PAUSED)
+                mediaSession.setMetadata(MusicLibrary.getMetadata(baseContext))
+                val  item:tts_Item?=MusicLibrary.getTTS_Item(baseContext)
+                if (item != null) {
+                    ttscontroller.setup(item)
+                    val db: StoryIndexDB =
+                        DBProvider.of(DBTableName.storyindex,applicationContext) as StoryIndexDB
+                    //val model:StoryIndexModel=libraryItemModel.model.copy
+
+                    MusicLibrary.getStoryIndexModel()?.let {
+                        if(it.isNew==1) {
+                            db.updateData(it.copy(0))
+                            updateContentOfCurrentFragment()
+                        }
+                    }
+                }
+            } catch (e: Exception) {
             }
+
 
         }
 
         override fun onPlay() {
 
-            setNewState(PlaybackStateCompat.STATE_PLAYING)
-            mediaSession.isActive = true
+            try {
+                setNewState(PlaybackStateCompat.STATE_PLAYING)
+                mediaSession.isActive = true
+                ttscontroller.start()
+                if(mediaSession.controller.metadata!=null) {
+                    try {
+
+                        notificationManager.notify(1, buildNotification())
+                        startService(Intent(baseContext, MediaPlaybackService::class.java))
+                        startForeground(1, buildNotification())
+                    }
+                    catch (e:Exception){}
+                }
+                if (gainAudioFocus()) {
+                    registerReceiver(audioNoisyReceiver, audioNoisyFilter)
+                }
+            } catch (e: Exception) {
+            }
+
            // val filecontroller=FileController(applicationContext);
            // filecontroller.OpenShortCut()
           // val tts=TTSController(applicationContext);
             //tts.setup()
 
-            ttscontroller.start()
 
-            if(mediaSession.controller.metadata!=null) {
-                notificationManager.notify(1, buildNotification())
-                startService(Intent(baseContext, MediaPlaybackService::class.java))
-                startForeground(1, buildNotification())
-            }
-            if (gainAudioFocus()) {
-                registerReceiver(audioNoisyReceiver, audioNoisyFilter)
-            }
         }
 
         override fun onPause() {
-            setNewState(PlaybackStateCompat.STATE_PAUSED)
-            ttscontroller.stop()
-           // mediaPlayer.pause()
-            unregisterReceiver(audioNoisyReceiver)
-           notificationManager.notify(1, buildNotification())
-            stopForeground(false)
+            try {
+                setNewState(PlaybackStateCompat.STATE_PAUSED)
+                ttscontroller.stop()
+                // mediaPlayer.pause()
+                try {
+                    unregisterReceiver(audioNoisyReceiver)
+                    notificationManager.notify(1, buildNotification())
+                    stopForeground(false)
+                }
+                catch (e:Exception){}
+            } catch (e: Exception) {
+            }
+
         }
 
         override fun onStop() {
-            setNewState(PlaybackStateCompat.STATE_STOPPED)
-          //  mediaPlayer.stop()
+            try {
+                setNewState(PlaybackStateCompat.STATE_STOPPED)
+                mediaSession.isActive = false
+                stopSelf()
+                unregisterReceiver(audioNoisyReceiver)
+                AudioManagerCompat.abandonAudioFocusRequest(audioManager, audioFocusRequest)
+                ttscontroller.shutdown();
+            } catch (e: Exception) {
+            }
+            //  mediaPlayer.stop()
            // unregisterReceiver(audioNoisyReceiver)
-            mediaSession.isActive = false
-            stopSelf()
-            unregisterReceiver(audioNoisyReceiver)
-            AudioManagerCompat.abandonAudioFocusRequest(audioManager, audioFocusRequest)
-            ttscontroller.shutdown();
+
         }
     }
     class NotificationConst{
@@ -210,7 +270,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             //.setAutoCancel(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-
         val action = if (mediaSession.controller.playbackState.state == PlaybackStateCompat.STATE_PLAYING) {
             NotificationCompat.Action(
                 R.drawable.stop2,
@@ -224,6 +283,12 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 MediaButtonReceiver.buildMediaButtonPendingIntent(baseContext, PlaybackStateCompat.ACTION_PLAY)
             )
         }
+
+        /*notificationBuilder.addAction(
+            R.drawable.back12 ,
+            getString(R.string.app_name),
+            MediaButtonReceiver.buildMediaButtonPendingIntent(baseContext, PlaybackStateCompat.ACTION_REWIND)
+        )*/
         notificationBuilder.addAction(
             R.drawable.reset2  ,
             getString(R.string.app_name),
@@ -237,6 +302,12 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             getString(R.string.app_name),
             MediaButtonReceiver.buildMediaButtonPendingIntent(baseContext, PlaybackStateCompat.ACTION_SKIP_TO_NEXT)
         )
+
+       /* notificationBuilder.addAction(
+            R.drawable.next12 ,
+            getString(R.string.app_name),
+            MediaButtonReceiver.buildMediaButtonPendingIntent(baseContext, PlaybackStateCompat.)
+        )*/
        /* notificationBuilder.addAction(
             R.drawable.bookmark2 ,
             getString(R.string.app_name),

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -56,7 +57,23 @@ public class SettingFragment extends Fragment {
         String s=DataStore.getSpeed_text(prefs.getInt(DataStore.speedKey,10));
         String pitchs=DataStore.getSpeed_text(prefs.getInt(DataStore.pitchKey,10));
         String lan=prefs.getString(DataStore.languageKey,"ja");
-       // int count=prefs.getInt(DataStore.dlcountKey,0);
+        Switch isTitleSpeakingSwitch=view.findViewById(R.id.isTitleSpeakingSwitch);
+        //isTitleSpeakingButton.Listen
+        SharedPreferences pref= DataStore.getSharedPreferences(getContext());
+        boolean isTitleSpeaking=pref.getBoolean("isTitleSpeaking",false);
+        isTitleSpeakingSwitch.setChecked(isTitleSpeaking);
+       isTitleSpeakingSwitch.setOnClickListener(
+               new View.OnClickListener() {
+                   @Override
+                   public void onClick(View v) {
+                       SharedPreferences.Editor editor=pref.edit();
+                       editor.putBoolean("isTitleSpeaking",isTitleSpeakingSwitch.isChecked());
+                       editor.apply();
+                   }
+               }
+       );
+
+        // int count=prefs.getInt(DataStore.dlcountKey,0);
        // TextView tv=view.findViewById(R.id.count_text);
        // tv.setText(Integer.toString(count)+"回");
         bt.setText(s);

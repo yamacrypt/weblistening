@@ -13,7 +13,7 @@ open class NarouFactory() : HTMLFactory() {
          impurl="https://ncode.syosetu.com"
          language=LanguageData.JP
      }
-    protected fun Typecheck(): NarouImp? {
+    protected fun Typecheck(url: String): NarouImp? {
             var resimp: NarouImp
             var number:String=""
             try {
@@ -39,7 +39,7 @@ open class NarouFactory() : HTMLFactory() {
                 else if( honbun!=null){
                     BOXcheck=false
                     //Set_downloadbutton((URL_CONTENT))
-                   return ShortNarouImp(doc)
+                   return ShortNarouImp(doc,url)
 
                 }
                 else{
@@ -57,7 +57,7 @@ open class NarouFactory() : HTMLFactory() {
         if(url==null)
             return
         super.parse(url)
-        this.imp=Typecheck()
+        this.imp=Typecheck(url)
     }
 
     override fun downloadable(url: String?): Boolean {

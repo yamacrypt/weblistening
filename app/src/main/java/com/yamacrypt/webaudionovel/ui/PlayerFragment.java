@@ -106,6 +106,7 @@ public class PlayerFragment extends Fragment {
                             model.getSpeakingnumber().setValue(progress);
 
                         }
+                        //saveBookMark();
                         /* int num=model.getSpeakingnumber().getValue();
                         elapse.setText(Integer.toString(num));
                         //MainActivity.ttsController.stop();
@@ -200,7 +201,7 @@ public class PlayerFragment extends Fragment {
         {
             actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
         }*/
-        mToolbar.setNavigationIcon(R.drawable.ic_dialog_close_dark);
+        mToolbar.setNavigationIcon(R.drawable.ic_group_collapse_13);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -229,8 +230,9 @@ public class PlayerFragment extends Fragment {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 menuitem.setEnabled(false);
-                BookMark bookmark=new BookMark(PlayList.getPlayingPath(),model.getSpeakingnumber().getValue(),PlayList.getRootpath(),PlayList.getCurrent_number());
-               BookMarkKt.BookMark_Save(bookmark,getContext()); //BookMark_Save()
+                BookMarkKt.autoSave(getContext());//saveBookMark();
+              //  BookMark bookmark=new BookMark(PlayList.getPlayingPath(),model.getSpeakingnumber().getValue(),PlayList.getRootpath(),PlayList.getCurrent_number());
+              // BookMarkKt.BookMark_Save(bookmark,getContext()); //BookMark_Save()
                 menuitem.setIcon(R.drawable.checkicon);
 
                 Timer timer=new Timer();
@@ -262,6 +264,11 @@ public class PlayerFragment extends Fragment {
         //  dictionary=menu.findItem(R.id.menu_dictionary);
 
     }
+    void saveBookMark(){
+        BookMark bookmark=new BookMark(PlayList.getPlayingPath(),model.getSpeakingnumber().getValue(),PlayList.getRootpath(),PlayList.getCurrent_number());
+        BookMarkKt.BookMark_Save(bookmark,getContext()); //BookMark_Save()
+    }
+
     /*TimerTask timercallback(){
         Handler handler=new Handler();
         Runnable runnable=new Runnable() {

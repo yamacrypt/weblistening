@@ -67,8 +67,6 @@ import com.yamacrypt.webaudionovel.ui.library.urlfragment.LibraryFragment
 import com.yamacrypt.webaudionovel.ui.library.urlfragment.LibraryItemModel
 import com.yamacrypt.webaudionovel.ui.library.urlfragment.getLibraryItemsFromURL
 import com.yamacrypt.webaudionovel.ui.library.utils.FileUtilsDeleteFile
-import com.yamacrypt.webaudionovel.ui.library.utils.createNewFile
-import com.yamacrypt.webaudionovel.ui.library.utils.createNewFolder
 import com.yamacrypt.webaudionovel.ui.search.WebFragment
 import com.yamacrypt.webaudionovel.ui.search.selector.SelectWebFragment
 import com.yamacrypt.webaudionovel.ui.search.selector.WebItem
@@ -97,7 +95,6 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
        // setSupportActionBar(toolbar);
-
       setVolumeControlStream(AudioManager.STREAM_MUSIC)
         setContentView(R.layout.activity_main)
         MobileAds.initialize(this){}
@@ -208,7 +205,30 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
         //NavigationUI.setupActionBarWithNavController(this, navController);
         bar.setupWithNavController(navController)*/
        // MobileAds.initialize(this) {}
+      val intent = intent
+      val action = intent.action
+      if (Intent.ACTION_SEND == action) {
+
+          intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
+              val navController =
+                  Navigation.findNavController(this,
+                      R.id.nav_main_fragment
+                  )
+              navController.navigate(R.id.action_navigation_menu_to_navigation_web,
+                  WebFragment.build {
+                      defaulturl=it
+                      //filesList[adapterPosition]
+                      //mode=HTMLFactory.getMode(it)
+                  })
+              //  var toast=Toast(applicationContext)
+              //// toast.setText(it)//makeText(applicationContext,extras)
+
+              // Update UI to reflect text being shared
+          }
+
+      }
     }
+
     private fun Play(state: Boolean) {
         val v=findViewById<Button>(R.id.play_button)
         val v2=findViewById<Button>(R.id.playBtn)
@@ -341,62 +361,43 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
         mToolbar.toolbar_progress_bar?.isVisible=false
         if(!mediaBrowser.isConnected)
         mediaBrowser.connect()
-       // MediaControllerCompat.getMediaController(this)?.registerCallback(controllerCallback)
+
+        //MediaControllerCompat.getMediaController(this)?.registerCallback(controllerCallback)
         // MediaControllerCompat.getMediaController(requireActivity()).transportControls.play()
     }
 
     // お作法的なコード
     override fun onStop() {
-        super.onStop()
-        MediaControllerCompat.getMediaController(this)?.unregisterCallback(controllerCallback)
-        mediaBrowser.disconnect()
+        try {
+            super.onStop()
+            MediaControllerCompat.getMediaController(this)?.unregisterCallback(controllerCallback)
+            mediaBrowser.disconnect()
+        } catch (e: Exception) {
+        }
     }
     private val connectionCallback = object : MediaBrowserCompat.ConnectionCallback() {
 
         override fun onConnected() {
             // 接続後、受け取ったTokenで操作するようにします。
-            MediaControllerCompat.setMediaController(this@MainActivity,
-                MediaControllerCompat(applicationContext, mediaBrowser.sessionToken))
-            buildTransportControls()
+             try {
+                 MediaControllerCompat.setMediaController(this@MainActivity,
+                     MediaControllerCompat(applicationContext, mediaBrowser.sessionToken))
+                 buildTransportControls()
+                 mediaBrowser.subscribe(mediaBrowser.root, subscriptionCallback)
+            } catch (e: Exception) {
+            }
             // 接続したので、曲リストを購読します。ここでparentIdを渡しています。
-            mediaBrowser.subscribe(mediaBrowser.root, subscriptionCallback)
+
 
         }
     }
     private fun buildTransportControls() {
-        val mediaController = MediaControllerCompat.getMediaController(this)
-        // 再生・一時停止を切り替えるボタン
 
-        /*playBtn?.setOnClickListener{
-            val state = mediaController.playbackState.state
-            if (state == PlaybackStateCompat.STATE_PLAYING) {
-                mediaController.transportControls.pause()
-                //  playBtn?.foreground = this.getDrawable(R.drawable.stop)
-            } else {
-                mediaController.transportControls.play()
-                // playBtn?.foreground = this.getDrawable(R.drawable.play)
-            }
-
+        try {
+            val mediaController = MediaControllerCompat.getMediaController(this)
+            mediaController.registerCallback(controllerCallback)
+        } catch (e: Exception) {
         }
-        endBtn?.setOnClickListener{
-            mediaController.transportControls.skipToNext()
-        }*/
-       /* endBtn?.setOnClickListener{
-            mediaController.transportControls.skipToNext()
-        }*/
-
-       /* binding.play.apply {
-            setOnClickListener {
-                val state = mediaController.playbackState.state
-                if (state == PlaybackStateCompat.STATE_PLAYING) {
-                    mediaController.transportControls.pause()
-                } else {
-                    mediaController.transportControls.play()
-                }
-            }
-        }*/
-        // 操作の監視(サービス接続後なら、ここじゃなくてもOK)
-        mediaController.registerCallback(controllerCallback)
     }
     fun getchild(s: String): String {
         val ls = s.split("/".toRegex()).toTypedArray()
@@ -466,15 +467,20 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
     }
 
     override fun onClick(libraryItemModel: LibraryItemModel) {
+
         if (libraryItemModel.fileType == FileType.FOLDER) {
           //  if(libraryItemModel.model.url!=null)
             addFileFragment(libraryItemModel)
+            val db:StoryIndexDB=DBProvider.of(DBTableName.storyindex,applicationContext) as StoryIndexDB
+            //val model:StoryIndexModel=libraryItemModel.model.copy
+            db.updateData(libraryItemModel.model.copy(0))
         }else {
            // val file=File(fileModel.path)
 
           //  val bookMark = BookMark(libraryItemModel.path, 0, File(libraryItemModel.path).parent,libraryItemModel.position)
                 //Play_Item(bookMark);
             Play_Item(libraryItemModel,0)
+            //updateContentOfCurrentFragment()
            /* val pref = DataStore.getSharedPreferences(this)
             if (pref.getInt(DataStore.review, 0) == 0) {
                 val reviewDialogFragment = ReviewDialogFragment.newInstance(this)
@@ -511,6 +517,7 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
             }*/
            // showInterstitial()
         }
+
     }
 
     override fun onClick(fileModel: WebItem) {
@@ -518,10 +525,11 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
             Navigation.findNavController(this,
                 R.id.nav_main_fragment
             )
+
         navController.navigate(R.id.action_navigation_menu_to_navigation_web,
             WebFragment.build {
                 //filesList[adapterPosition]
-                mode=fileModel.mode
+                defaulturl=HTMLFactory.from(fileModel.mode).get_defaulturl()
             })
     }
 
@@ -634,7 +642,10 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
     }
     override fun onBookMark(rootpath:String) {
 
-        val bookMark= BookMark_Open(rootpath,this)//BookMark(PlayList.pathlist[0],10);
+        val bookMark= BookMark_Open(rootpath,this)
+        if(bookMark==null) {
+            return//BookMark(PlayList.pathlist[0],10);
+        }
         PlayList.setCurrent_number(bookMark.position)//ブックマークボタン押したときのplaylistt対策
         try {
             val db = DBProvider.of(DBTableName.storyindex, applicationContext) as StoryIndexDB
@@ -790,8 +801,8 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
             val db = DBProvider.of(DBTableName.storyindex, applicationContext) as StoryIndexDB
 
             downloader.WriteNovel(novelfile,stringList,threadfactory.get_language())
-            val sc= FileController.ShortCut(title,"",convertedurl,stringList!!.size,threadfactory.get_language())
-            downloader.WriteShortCut(titlefile,sc)
+            //val sc= FileController.ShortCut(title,"",convertedurl,stringList!!.size,threadfactory.get_language())
+            //downloader.WriteShortCut(titlefile,sc)
             db.insert_and_update(
                 StoryIndexModel(title!!,folder.toString(),threadfactory.getIndex()!!,url!!,
                         language =threadfactory.get_language(),
@@ -999,7 +1010,10 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
     fun goTotwitter(view: View?) {
         goToUrl("https://twitter.com/yamacrypt")
     }
-
+    fun playerToFullText(v:View?){
+        val navController=Navigation.findNavController(this,R.id.nav_main_fragment);
+        navController.navigate(R.id.action_navigation_player_to_text)
+    }
     fun musicplayer_Click(v: View?) {
         /*LinearLayout layout=findViewById(R.id.Layout);
        if(DataStore.check_window) {
@@ -1060,6 +1074,12 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
 
       //  ttsController.back(1);
         //audioController?.back_music(30)
+    }
+    fun next1BtnClick(v:View?){
+        mediaController.transportControls.fastForward()
+    }
+    fun back1BtnClick(v:View?){
+        mediaController.transportControls.rewind()
     }
     fun resetBtnClick(v:View?){
         mediaController.transportControls.skipToPrevious()

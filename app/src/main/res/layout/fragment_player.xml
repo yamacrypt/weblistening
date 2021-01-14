@@ -11,7 +11,8 @@
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60sp">
+        android:layout_marginTop="60sp"
+        android:onClick="playerToFullText">
 
         <ImageView
             android:layout_width="200sp"
@@ -66,6 +67,22 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.35" />
 
+
+        <Button
+            android:id="@+id/back1Btn"
+            android:layout_width="30sp"
+            android:layout_height="30sp"
+            android:background="@drawable/button_state2"
+            android:foreground="@drawable/back1"
+            android:onClick="back1BtnClick"
+            android:stateListAnimator="@null" />
+
+        <Space
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.05" />
+
+
         <Button
             android:id="@+id/resetBtn"
             android:layout_width="30sp"
@@ -74,7 +91,6 @@
             android:foreground="@drawable/reset"
             android:onClick="resetBtnClick"
             android:stateListAnimator="@null" />
-
         <Space
             android:layout_width="0sp"
             android:layout_height="wrap_content"
@@ -88,6 +104,7 @@
             android:foreground="@drawable/playicon"
             android:onClick="playBtnClick"
             android:stateListAnimator="@null" />
+
         <Space
             android:layout_width="0sp"
             android:layout_height="wrap_content"
@@ -100,6 +117,21 @@
             android:background="@drawable/button_state2"
             android:foreground="@drawable/end"
             android:onClick="endBtnClick"
+            android:stateListAnimator="@null" />
+
+        <Space
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.05" />
+
+
+        <Button
+            android:id="@+id/next1Btn"
+            android:layout_width="30sp"
+            android:layout_height="30sp"
+            android:background="@drawable/button_state2"
+            android:foreground="@drawable/next1"
+            android:onClick="next1BtnClick"
             android:stateListAnimator="@null" />
 
         <Space

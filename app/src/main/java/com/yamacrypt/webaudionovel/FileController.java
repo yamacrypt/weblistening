@@ -1,6 +1,7 @@
 package com.yamacrypt.webaudionovel;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.util.Log;
 
@@ -403,6 +404,12 @@ public class FileController {
             //DataStore.intro=file.getName();
             File novelfile = DataStore.getNovelFile(context, sc.getLink());
             List<String> ls = ReadLines(novelfile);
+            SharedPreferences pref= DataStore.getSharedPreferences(context);
+            boolean isTitleSpeaking=pref.getBoolean("isTitleSpeaking",false);
+            if(isTitleSpeaking)
+            {
+                ls.add(0,sc.getNovel_name());
+            }
             //TTSController ttsController=new TTSController(context);
             //TTSService.Companion.setup(ls);
             //TTSController tts=TTSController();
@@ -422,7 +429,7 @@ public class FileController {
     public tts_Item OpenShortCut(String url){
         return OpenShortCut(url,0);
     }
-    public tts_Item _OpenShortCut(File file,int startindex){
+    /*public tts_Item _OpenShortCut(File file,int startindex){
         try {
             ShortCut sc = ReadShortCut(file);
            //StoryIndexDB db= (StoryIndexDB) DBProvider.Companion.of(DBTableName.storyindex,context);
@@ -444,22 +451,22 @@ public class FileController {
         catch (Exception e){
             return null;//ttsController.setup(ls,sc.language,startindex);
         }
-       /* try {
+        try {
             TextView title = MenuFragment.popupView.findViewById(R.id.dl_text);
             title.setText(sc.novelname);
         }
-        catch (Exception e){}*///TTSService.ttsController.s();
+        catch (Exception e){}//TTSService.ttsController.s();
        // ttsController.start();
     }
     public tts_Item _OpenShortCut(File file){
         return _OpenShortCut(file,0);
-    }
-    public void WriteShortCut(File file, int size, String url,String language) {
+    }*/
+   /* public void WriteShortCut(File file, int size, String url,String language) {
         /*File root= context.getFilesDir();
         File dir=new File(root.getAbsolutePath().toString()+"/shortcut");
         if(!dir.exists())
             dir.mkdir();
-        File file = new File(dir, titlename);*/
+        File file = new File(dir, titlename);
         try {
             FileWriter fileWriter = new FileWriter(file,false);
             BufferedWriter bfWriter = new BufferedWriter(fileWriter);
@@ -478,7 +485,7 @@ public class FileController {
         File dir=new File(root.getAbsolutePath().toString()+"/shortcut");
         if(!dir.exists())
             dir.mkdir();
-        File file = new File(dir, titlename);*/
+        File file = new File(dir, titlename);
         String url=sc.link ;
         int size=sc.size;
         String language=sc.language;
@@ -495,7 +502,7 @@ public class FileController {
         }
         catch (Exception e){
             Log.d("filecreate",e.toString());}
-    }
+    }*/
     public class CSVParser {
 
         private Context context;

@@ -82,6 +82,7 @@ class MenuFragment : Fragment() {
             } else {
                 playBtn.foreground = requireActivity().getDrawable(R.drawable.playicon)
             }
+
             (layout as LinearLayout).addView(popupView, DataStore.smallwindow_position)
             (popupView.findViewById<View>(R.id.dl_text) as TextView).text =
                 DataStore.intro

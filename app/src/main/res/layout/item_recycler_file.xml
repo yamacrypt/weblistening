@@ -31,12 +31,20 @@
         app:layout_constraintTop_toBottomOf="@id/nameTextView" />
 
 
+    <TextView
+        android:id="@+id/isNewTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="new"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <FrameLayout
+        android:id="@+id/frameLayout"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView

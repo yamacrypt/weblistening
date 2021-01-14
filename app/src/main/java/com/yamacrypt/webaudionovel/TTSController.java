@@ -13,10 +13,11 @@ import com.yamacrypt.webaudionovel.Database.StoryIndexModel;
 import com.yamacrypt.webaudionovel.MusicService.MusicLibrary;
 import com.yamacrypt.webaudionovel.MusicService.tts_Item;
 import com.yamacrypt.webaudionovel.ui.PlayerViewModel;
+import com.yamacrypt.webaudionovel.ui.library.models.BookMark;
+import com.yamacrypt.webaudionovel.ui.library.models.BookMarkKt;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.util.List;
 import java.util.Locale;
 
@@ -87,7 +88,7 @@ public class TTSController {
                 int number=playerViewModel.getSpeakingnumber().getValue();
                 number++;
                 speak(number);
-                  /*  if (number < maxnumber) {
+                BookMarkKt.autoSave(context); /*  if (number < maxnumber) {
                         playerViewModel.getSpeakingnumber().postValue(number + 1);
                         number++;
                         tts.speak(stringList.get(number), TextToSpeech.QUEUE_FLUSH, null, "TAG");
@@ -160,17 +161,27 @@ public class TTSController {
     int maxnumber;*/
     //int speakingnumber=0;
     public String getCurrentstring() {
-        int number =playerViewModel.getSpeakingnumber().getValue();
-        int maxnumber=playerViewModel.getMaxnumber().getValue();
-        if(number<maxnumber)
-        return stringList.get(number);
-        else
+        try {
+            int number = playerViewModel.getSpeakingnumber().getValue();
+            int maxnumber = playerViewModel.getMaxnumber().getValue();
+            if (number < maxnumber)
+                return stringList.get(number);
+            else
+                return "";
+        }
+        catch (Exception e) {
             return "";
+        }
     }
     public  int getCurrentIndex(){
         return playerViewModel.getSpeakingnumber().getValue();
     }
     static PlayerViewModel playerViewModel;
+
+    public static List<String> getStringList() {
+        return stringList;
+    }
+
     static List<String> stringList;
     public void setup(@NotNull List<String> stringList,String language,int startindex){
         Init(language,startindex);
@@ -200,7 +211,9 @@ public class TTSController {
     public void speak(int number) {
      {
             if (isInitialized) {
-
+                if(number<0){
+                    number=0;
+                }
 
                 //i=0;
                 // int number =playerViewModel.getSpeakingnumber().getValue();
@@ -217,7 +230,8 @@ public class TTSController {
                     } catch (Exception e) {
                     }
 
-                } else {
+                }
+                else {
                     //next();
                     listener.onFinished();
                 }
@@ -239,6 +253,10 @@ public class TTSController {
     public void s(){
         tts.speak(stringList.get(0),TextToSpeech.QUEUE_FLUSH,null,"TAG");
 
+    }
+    public void move(int amount){
+        stop();
+        speak(playerViewModel.getSpeakingnumber().getValue()+amount);
     }
     public void stop(){
         if(isInitialized) {
@@ -296,19 +314,37 @@ public class TTSController {
         playerViewModel.getSpeakingnumber().setValue(0);
         start();
     }
-    public void end(){
+   /* public void end(){
         int maxnumber=playerViewModel.getMaxnumber().getValue();
         stop();
         playerViewModel.getSpeakingnumber().setValue(maxnumber);
         //start();
         next();
-    }
+    }*/
     void nextwithoutad(){
         while(!nextcheck()){}
 
     }
+    public void back(){
+        int temp=PlayList. current_number;
+        try {
+            while (!backcheck()) {
+            }
+        }
+        catch (Exception e){
+            PlayList.current_number=temp;
+        }
+        //playerViewModel.getSpeakingnumber().setValue(0);
+    }
     public void next(){
-        nextwithoutad();
+        int temp=PlayList. current_number;
+        try {
+            nextwithoutad();
+        }
+        catch (Exception e){
+            PlayList.current_number=temp;
+        }
+
       /*  if(DataStore.ad_time==0) {
             DataStore.ad_time=DataStore.default_adtime;
             if (mInterstitialAd.isLoaded()) {
@@ -350,6 +386,34 @@ public class TTSController {
                // else{
 
                 //}
+        }
+        return true;
+    }
+    Boolean backcheck(){
+        if(PlayList.current_number>0) {
+            PlayList.current_number--;
+            String url = PlayList.urllist.get(PlayList.current_number);
+
+            //FileController fileController = new FileController(context);
+            // if(fileController.OpenShortCut( url)!=null) {
+            //setup(MusicLibrary.INSTANCE.getTTS_Item(context));
+            // MediaControllerCompat.getMediaController(MainActivity).transportControls.play();
+            //TTSService.ttsController.setup(item);
+            try {
+                StoryIndexDB db = (StoryIndexDB) DBProvider.Companion.of(DBTableName.storyindex, context);
+                StoryIndexModel sc=db.getStoryIndexItem(url);
+                MusicLibrary.INSTANCE.setdata(sc, 0);
+                return true;
+            }
+            catch (Exception e){
+
+            }
+            return false;
+
+            //  }
+            // else{
+
+            //}
         }
         return true;
     }
