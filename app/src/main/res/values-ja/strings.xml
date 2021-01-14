@@ -16,4 +16,5 @@
     <string name="explain_sub">まだ小説がダウンロードされていません</string>
     <string name="review_text" >レビュー</string>
     <string name="isTitleSpeaking" translatable="false">タイトルの読み上げ</string>
+    <string name="buttonMode">動作の変更</string>
 </resources>

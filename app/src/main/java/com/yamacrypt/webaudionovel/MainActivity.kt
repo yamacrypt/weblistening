@@ -1052,6 +1052,7 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
         val state = mediaController.playbackState?.state
         if (state == PlaybackStateCompat.STATE_PLAYING) {
             mediaController.transportControls.pause()
+           // mediaController.transportControls.
             //  playBtn?.foreground = this.getDrawable(R.drawable.stop)
         } else {
             mediaController.transportControls.play()
@@ -1076,17 +1077,19 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
         //audioController?.back_music(30)
     }
     fun next1BtnClick(v:View?){
-        mediaController.transportControls.fastForward()
+        mediaController.transportControls.seekTo(1)
     }
     fun back1BtnClick(v:View?){
-        mediaController.transportControls.rewind()
+     mediaController.transportControls.seekTo(-1)
     }
     fun resetBtnClick(v:View?){
-        mediaController.transportControls.skipToPrevious()
+        //mediaController.transportControls.skipToPrevious()
+        mediaController.transportControls.rewind()
     }
     fun endBtnClick(v: View?){
 
-            mediaController.transportControls.skipToNext()
+ //           mediaController.transportControls.skipToNext()
+        mediaController.transportControls.fastForward()
       //  val ttsController=TTSService.ttsController
 
        // ttsController.end()

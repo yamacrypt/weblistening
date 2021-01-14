@@ -11,8 +11,8 @@ android {
         applicationId "com.yamacrypt.webaudionovel"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 21
-        versionName "3.4"
+        versionCode 22
+        versionName "3.5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

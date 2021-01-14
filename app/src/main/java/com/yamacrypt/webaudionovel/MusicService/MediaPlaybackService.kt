@@ -2,10 +2,7 @@ package com.yamacrypt.webaudionovel.MusicService
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
@@ -21,6 +18,7 @@ import androidx.media.AudioFocusRequestCompat
 import androidx.media.AudioManagerCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.session.MediaButtonReceiver
+import com.yamacrypt.webaudionovel.DataStore
 import com.yamacrypt.webaudionovel.Database.DBProvider
 import com.yamacrypt.webaudionovel.Database.DBTableName
 import com.yamacrypt.webaudionovel.Database.StoryIndexDB
@@ -78,6 +76,36 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         broadcastIntent.putExtra(FileChangeBroadcastReceiver.EXTRA_PATH,"update")
         sendBroadcast(broadcastIntent)
     }
+    fun _onBack1() {
+
+            ttscontroller.move(-1)
+        }
+
+    fun _onNext1() {
+        ttscontroller.move(1)
+    }
+    fun _onSkipToPrevious() {
+
+        try {
+            ttscontroller.back()//reset()
+            mediaSession.controller.transportControls.prepare()
+            mediaSession.controller.transportControls.play()
+        } catch (e: Exception) {
+        }
+    }
+    // override fun on
+   fun _onSkipToNext() {
+        try {
+            ttscontroller.next()
+            mediaSession.controller.transportControls.prepare()
+            mediaSession.controller.transportControls.play()
+        } catch (e: Exception) {
+        }
+        // ttscontroller.setup(MusicLibrary.getTTS_Item(baseContext))
+        // MusicLibrary.setdata(File(path),0);
+        // TTSService.ttsController.setup(item);
+        //super.onSkipToNext()
+    }
     //private val mediaPlayer = MediaPlayer()
    lateinit var ttscontroller:TTSController//=TTSController();//=TTSController(applicationContext)
     private val callback = object : MediaSessionCompat.Callback() {
@@ -90,13 +118,20 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             }
         }
 
+        override fun onSeekTo(pos: Long) {
+            ttscontroller.move(pos.toInt())
+           // super.onSeekTo(pos)
+        }
         override fun onRewind() {
-            ttscontroller.move(-1)
+            _onSkipToPrevious()
+          //  ttscontroller.move(-1)
         }
 
         override fun onFastForward() {
+            _onSkipToNext()
             //menuitem.setEnabled(false)
-            ttscontroller.move(1)
+          //  ttscontroller.move(1)
+
            /* ttscontroller.reset()
             val bookmark = BookMark(
                 PlayList.getPlayingPath(),
@@ -127,22 +162,35 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         }
 
         override fun onSkipToPrevious() {
-           
-            try {
+            val buttonMode=DataStore.getSharedPreferences(baseContext).getBoolean("buttonMode",false)
+           if(!buttonMode){
+               _onSkipToPrevious()
+           }
+            else{
+               _onBack1()
+           }
+           /* try {
                 ttscontroller.back()//reset()
                 mediaSession.controller.transportControls.prepare()
                 mediaSession.controller.transportControls.play()
             } catch (e: Exception) {
-            }
+            }*/
         }
        // override fun on
         override fun onSkipToNext() {
-           try {
+           val buttonMode=DataStore.getSharedPreferences(baseContext).getBoolean("buttonMode",false)
+            if(!buttonMode){
+                _onSkipToNext()
+           }
+            else{
+                _onNext1()
+           }
+          /* try {
                ttscontroller.next()
                mediaSession.controller.transportControls.prepare()
                mediaSession.controller.transportControls.play()
            } catch (e: Exception) {
-           }
+           }*/
            // ttscontroller.setup(MusicLibrary.getTTS_Item(baseContext))
            // MusicLibrary.setdata(File(path),0);
            // TTSService.ttsController.setup(item);
@@ -270,6 +318,11 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             //.setAutoCancel(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+        val buttonMode=DataStore.getSharedPreferences(baseContext).getBoolean("buttonMode",false)
+        var backicon=R.drawable.reset2
+        if(buttonMode){
+            backicon=R.drawable.back12
+        }
         val action = if (mediaSession.controller.playbackState.state == PlaybackStateCompat.STATE_PLAYING) {
             NotificationCompat.Action(
                 R.drawable.stop2,
@@ -283,22 +336,26 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 MediaButtonReceiver.buildMediaButtonPendingIntent(baseContext, PlaybackStateCompat.ACTION_PLAY)
             )
         }
-
+        //val buttonMode=DataStore.getSharedPreferences(applicationContext).getBoolean("buttonMode",false)
         /*notificationBuilder.addAction(
             R.drawable.back12 ,
             getString(R.string.app_name),
             MediaButtonReceiver.buildMediaButtonPendingIntent(baseContext, PlaybackStateCompat.ACTION_REWIND)
         )*/
         notificationBuilder.addAction(
-            R.drawable.reset2  ,
+            backicon  ,
             getString(R.string.app_name),
             MediaButtonReceiver.buildMediaButtonPendingIntent(baseContext, PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
         )
 
 
         notificationBuilder.addAction(action)
+        var nexticon=R.drawable.end2
+        if(buttonMode){
+            nexticon=R.drawable.next12
+        }
         notificationBuilder.addAction(
-            R.drawable.end2 ,
+            nexticon ,
             getString(R.string.app_name),
             MediaButtonReceiver.buildMediaButtonPendingIntent(baseContext, PlaybackStateCompat.ACTION_SKIP_TO_NEXT)
         )

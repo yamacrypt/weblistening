@@ -18,4 +18,5 @@
     <string name="explain_main">Lets Download new novels from Search View！</string>
     <string name="explain_sub">No novels</string>
     <string name="isTitleSpeaking">Reading out the title</string>
+    <string name="buttonMode">Change of Function Behavior</string>
 </resources>

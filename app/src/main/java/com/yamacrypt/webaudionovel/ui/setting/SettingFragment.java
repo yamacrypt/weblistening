@@ -57,10 +57,10 @@ public class SettingFragment extends Fragment {
         String s=DataStore.getSpeed_text(prefs.getInt(DataStore.speedKey,10));
         String pitchs=DataStore.getSpeed_text(prefs.getInt(DataStore.pitchKey,10));
         String lan=prefs.getString(DataStore.languageKey,"ja");
+        SharedPreferences pref= DataStore.getSharedPreferences(getContext());
         Switch isTitleSpeakingSwitch=view.findViewById(R.id.isTitleSpeakingSwitch);
         //isTitleSpeakingButton.Listen
-        SharedPreferences pref= DataStore.getSharedPreferences(getContext());
-        boolean isTitleSpeaking=pref.getBoolean("isTitleSpeaking",false);
+       boolean isTitleSpeaking=pref.getBoolean("isTitleSpeaking",false);
         isTitleSpeakingSwitch.setChecked(isTitleSpeaking);
        isTitleSpeakingSwitch.setOnClickListener(
                new View.OnClickListener() {
@@ -72,7 +72,20 @@ public class SettingFragment extends Fragment {
                    }
                }
        );
-
+        Switch buttonModeSwitch=view.findViewById(R.id.buttonModeSwitch);
+        //isTitleSpeakingButton.Listen
+        boolean buttonMode=pref.getBoolean("buttonMode",false);
+        buttonModeSwitch.setChecked(buttonMode);
+        buttonModeSwitch.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        SharedPreferences.Editor editor=pref.edit();
+                        editor.putBoolean("buttonMode",buttonModeSwitch.isChecked());
+                        editor.apply();
+                    }
+                }
+        );
         // int count=prefs.getInt(DataStore.dlcountKey,0);
        // TextView tv=view.findViewById(R.id.count_text);
        // tv.setText(Integer.toString(count)+"回");
