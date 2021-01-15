@@ -21,22 +21,43 @@ data class BookMark (
      if(va==null){
          va=0
      }
-     val bookmark = BookMark(
+   /*  val bookmark = BookMark(
          PlayList.getPlayingPath(),
          va,
          PlayList.getRootpath(),
          PlayList.getCurrent_number()
-     )
+     )*/
      val continueBookmark = BookMark(
          PlayList.getPlayingPath(),
          va,
          DataStore.getShortCutFile(context,"").path,
          PlayList.getCurrent_number()
      )
-     BookMark_Save(bookmark,context) //BookMark_Save()
+     //BookMark_Save(bookmark,context) //BookMark_Save()
      BookMark_Save(continueBookmark,context)
 
  }
+fun manualSave(context: Context){
+    val model = PlayerViewModel()
+    var va:Int?=model.getSpeakingnumber().getValue();
+    if(va==null){
+        va=0
+    }
+    val bookmark = BookMark(
+        PlayList.getPlayingPath(),
+        va,
+        PlayList.getRootpath(),
+        PlayList.getCurrent_number()
+    )
+    val continueBookmark = BookMark(
+        PlayList.getPlayingPath(),
+        va,
+        DataStore.getShortCutFile(context,"").path,
+        PlayList.getCurrent_number()
+    )
+    BookMark_Save(bookmark,context) //BookMark_Save()
+    BookMark_Save(continueBookmark,context)
+}
 
  fun BookMark_Save(bookMark: BookMark,context: Context){
      val  db : BookMarkDB = DBProvider.of(DBTableName.bookmark,context) as BookMarkDB;

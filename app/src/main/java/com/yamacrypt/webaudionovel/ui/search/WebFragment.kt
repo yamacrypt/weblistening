@@ -279,7 +279,7 @@ class WebFragment:Fragment() {
                 val folder=DataStore.CreateFolder(threadcontext,foldername)
                 val db:StoryIndexDB= DBProvider.of(DBTableName.storyindex,requireContext()) as StoryIndexDB
                 db.insert_and_update(StoryIndexModel(path=foldername!!,
-                    parent_path=DataStore.getShortCutFile(context, "").toString(),
+                    parent_path=DataStore.getShortCutFile(threadcontext, "").toString(),
                     index = 0,url=url!!,
                     language =threadfactory.get_language(),
                     novel_name = foldername,

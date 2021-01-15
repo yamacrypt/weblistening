@@ -390,7 +390,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         super.onCreate()
         ttscontroller=TTSController(baseContext)
         ttscontroller.setListener {
-            mediaSession.controller.transportControls.skipToNext()
+            mediaSession.controller.transportControls.fastForward()
         }
         notificationManager = NotificationManagerCompat.from(baseContext)
         mediaSession = MediaSessionCompat(baseContext, MediaPlaybackService::class.simpleName!!).apply {

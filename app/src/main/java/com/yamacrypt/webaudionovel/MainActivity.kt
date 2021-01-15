@@ -1031,8 +1031,11 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
             )
         val action= MenuFragmentDirections.actionNavigationMenuToNavigationPlay(DataStore.intro)
       // val action=PlayerFragmentDirections.goPlayer(DataStore.intro)
-       navController.navigate(action)
-       // smallwindow_enabled(false)
+        try {
+            navController.navigate(action)
+        } catch (e: Exception) {
+        }
+        // smallwindow_enabled(false)
 
         // layout.removeViewAt(DataStore.smallwindow_position)
         //DataStore.check_window=true

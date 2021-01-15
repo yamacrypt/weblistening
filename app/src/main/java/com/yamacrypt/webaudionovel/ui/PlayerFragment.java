@@ -230,7 +230,7 @@ public class PlayerFragment extends Fragment {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 menuitem.setEnabled(false);
-                BookMarkKt.autoSave(getContext());//saveBookMark();
+                BookMarkKt.manualSave(getContext());//saveBookMark();
               //  BookMark bookmark=new BookMark(PlayList.getPlayingPath(),model.getSpeakingnumber().getValue(),PlayList.getRootpath(),PlayList.getCurrent_number());
               // BookMarkKt.BookMark_Save(bookmark,getContext()); //BookMark_Save()
                 menuitem.setIcon(R.drawable.checkicon);
