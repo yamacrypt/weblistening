@@ -27,6 +27,7 @@ import com.yamacrypt.webaudionovel.R
 import com.yamacrypt.webaudionovel.TTSController
 import com.yamacrypt.webaudionovel.ui.library.fileservice.FileChangeBroadcastReceiver
 import com.yamacrypt.webaudionovel.ui.library.models.BookMark
+import com.yamacrypt.webaudionovel.ui.library.models.BookMark_Open
 import com.yamacrypt.webaudionovel.ui.library.models.BookMark_Save
 import java.lang.Exception
 import kotlin.concurrent.thread
@@ -205,7 +206,8 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 mediaSession.setMetadata(MusicLibrary.getMetadata(baseContext))
                 val  item:tts_Item?=MusicLibrary.getTTS_Item(baseContext)
                 if (item != null) {
-                    ttscontroller.setup(item)
+                        ttscontroller.setup(item)
+
                     val db: StoryIndexDB =
                         DBProvider.of(DBTableName.storyindex,applicationContext) as StoryIndexDB
                     //val model:StoryIndexModel=libraryItemModel.model.copy
@@ -275,7 +277,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 stopSelf()
                 unregisterReceiver(audioNoisyReceiver)
                 AudioManagerCompat.abandonAudioFocusRequest(audioManager, audioFocusRequest)
-                ttscontroller.shutdown();
+                ttscontroller.destroy()
             } catch (e: Exception) {
             }
             //  mediaPlayer.stop()

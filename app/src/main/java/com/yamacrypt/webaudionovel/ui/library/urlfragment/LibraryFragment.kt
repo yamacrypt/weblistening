@@ -145,13 +145,13 @@ class LibraryFragment : Fragment(){
             menuitem.setOnMenuItemClickListener {
 
                 try {
-                    val  db : StoryIndexDB = DBProvider.of(DBTableName.storyindex,requireContext()) as StoryIndexDB;
+                   /* val  db : StoryIndexDB = DBProvider.of(DBTableName.storyindex,requireContext()) as StoryIndexDB;
                     //val files=db.getsortedAllfromparent(bookMark.rootpath)
                     //val bk=BookMark_Open(URL,requireContext())
                     //val parent=File(bookmark.path).parent+"/"
                    val parent=db.getPARENTURL(bookmark.path)
                     val ls=db.getsortedAllurlsfromParenturl(parent!!)
-                    PlayList.setup(ls,parent)
+                    PlayList.setup(ls,parent)*/
                     mCallback.onBookMark(PATH);
                 } catch (e: Exception) {
                 }

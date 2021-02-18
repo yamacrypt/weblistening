@@ -34,6 +34,7 @@ abstract class BaseDB(applicationContext:Context) {
             val database = dbHelper.writableDatabase
 
             database.insertOrThrow(tableName, null, obj.toContentValues())
+            database.close()
         //throw java.lang.Exception()
        /* }catch(exception: Exception) {
             Log.e("insertData", exception.toString())

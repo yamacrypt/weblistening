@@ -14,7 +14,11 @@ class NocFactory() : NarouFactory(){
     override fun parse(url:String?){
         if(url==null)
             return
-        doc=Jsoup.connect(url).cookie("over18","yes").get()
+        try {
+            doc=Jsoup.connect(url).cookie("over18","yes").get()
+        } catch (e: Exception) {
+        }
+        Thread.sleep(3000)
         this.imp=Typecheck(url)
     }
     override fun downloadable(url: String?): Boolean {

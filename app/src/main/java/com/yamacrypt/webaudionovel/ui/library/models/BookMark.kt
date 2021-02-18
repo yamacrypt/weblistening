@@ -21,19 +21,19 @@ data class BookMark (
      if(va==null){
          va=0
      }
-   /*  val bookmark = BookMark(
+     val bookmark = BookMark(
          PlayList.getPlayingPath(),
          va,
          PlayList.getRootpath(),
          PlayList.getCurrent_number()
-     )*/
+     )
      val continueBookmark = BookMark(
          PlayList.getPlayingPath(),
          va,
          DataStore.getShortCutFile(context,"").path,
          PlayList.getCurrent_number()
      )
-     //BookMark_Save(bookmark,context) //BookMark_Save()
+     BookMark_Save(bookmark,context) //BookMark_Save()
      BookMark_Save(continueBookmark,context)
 
  }

@@ -2,6 +2,7 @@ package com.yamacrypt.webaudionovel.ui.search
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
@@ -21,6 +22,7 @@ import com.yamacrypt.webaudionovel.Database.StoryIndexDB
 import com.yamacrypt.webaudionovel.Database.StoryIndexModel
 import com.yamacrypt.webaudionovel.FileController
 import com.yamacrypt.webaudionovel.MainActivity.Companion.mInterstitialAd
+import com.yamacrypt.webaudionovel.NovelDownloader
 import com.yamacrypt.webaudionovel.R
 import com.yamacrypt.webaudionovel.htmlParser.HTMLFactory
 import com.yamacrypt.webaudionovel.htmlParser.Kakuyomu.KakuyomuFactory
@@ -29,6 +31,7 @@ import com.yamacrypt.webaudionovel.htmlParser.Narou.MNLTFactory
 import com.yamacrypt.webaudionovel.htmlParser.Narou.NarouFactory
 import com.yamacrypt.webaudionovel.htmlParser.Narou.NocFactory
 import com.yamacrypt.webaudionovel.htmlParser.Wattpad.WattpadFacotry
+import com.yamacrypt.webaudionovel.ui.library.fileservice.FileChangeBroadcastReceiver
 import com.yamacrypt.webaudionovel.ui.search.selector.*
 import kotlinx.android.synthetic.main.fragment_web.*
 import java.io.File
@@ -99,7 +102,15 @@ class WebFragment:Fragment() {
        // defaulturl=htmlfactory.get_defaulturl()
     }
 
+    /*override fun onPause() {
+        super.onPause()
+        webView?.settings?.javaScriptEnabled=false
+    }
 
+    override fun onResume() {
+        super.onResume()
+        webView?.settings?.javaScriptEnabled=true
+    }*/
     @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -116,7 +127,7 @@ class WebFragment:Fragment() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 val webUrl = search_wevview?.url
                 val htmlfactory=HTMLFactory.from(url)
-                val check=htmlfactory.downloadable(webUrl)
+                val check=htmlfactory?.downloadable(webUrl) ?:false
                 menuitem.isVisible=check;
                 menuitem.isEnabled=check;
                 progressBar?.isEnabled=true
@@ -253,13 +264,19 @@ class WebFragment:Fragment() {
     val URL_ERROR=0
 
     val ERROR=0
-
+    private fun updateContentOfCurrentFragment() {
+        val broadcastIntent = Intent()
+        broadcastIntent.action = context?.getString(R.string.file_change_broadcast)
+        broadcastIntent.putExtra(FileChangeBroadcastReceiver.EXTRA_PATH,"update")
+            activity?.sendBroadcast(broadcastIntent)
+    }
     //val ignore = HashSet<String>().add("<ruby>")
     private fun SaveNovels(url: String?): Boolean {
        thread {
-           val  threadfactory=HTMLFactory.from(url!!)
-           val threadcontext=context
-           Filesave(threadfactory,threadcontext,url)
+          // val  threadfactory=HTMLFactory.from(url!!)
+           //val threadcontext=context
+           NovelDownloader.download(url,requireContext(),{ updateContentOfCurrentFragment() })
+         //  Filesave(threadfactory,threadcontext,url)
        }
         /*
         Thread(Runnable {

@@ -45,13 +45,9 @@ import com.yamacrypt.webaudionovel.BuildConfig.DEBUG_MODE
 import com.yamacrypt.webaudionovel.Database.DBProvider
 import com.yamacrypt.webaudionovel.Database.DBTableName
 import com.yamacrypt.webaudionovel.Database.StoryIndexDB
-import com.yamacrypt.webaudionovel.Database.StoryIndexModel
 import com.yamacrypt.webaudionovel.MusicService.MediaPlaybackService
 import com.yamacrypt.webaudionovel.MusicService.MusicLibrary
 import com.yamacrypt.webaudionovel.htmlParser.HTMLFactory
-import com.yamacrypt.webaudionovel.htmlParser.Kakuyomu.KakuyomuFactory
-import com.yamacrypt.webaudionovel.htmlParser.Narou.NarouFactory
-import com.yamacrypt.webaudionovel.htmlParser.Wattpad.WattpadFacotry
 import com.yamacrypt.webaudionovel.ui.MenuFragment
 import com.yamacrypt.webaudionovel.ui.MenuFragmentDirections
 import com.yamacrypt.webaudionovel.ui.PlayerViewModel
@@ -91,6 +87,7 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
        lateinit var mInterstitialAd: InterstitialAd
         private const val OPTIONS_DIALOG_TAG: String = "com.yamacrypt.filebrowsertest.main.options_dialog"
     }
+
   //  private lateinit var mInterstitialAd: InterstitialAd
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -361,7 +358,7 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
         mToolbar.toolbar_progress_bar?.isVisible=false
         if(!mediaBrowser.isConnected)
         mediaBrowser.connect()
-
+        prepareItemOnStart()
         //MediaControllerCompat.getMediaController(this)?.registerCallback(controllerCallback)
         // MediaControllerCompat.getMediaController(requireActivity()).transportControls.play()
     }
@@ -372,6 +369,8 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
             super.onStop()
             MediaControllerCompat.getMediaController(this)?.unregisterCallback(controllerCallback)
             mediaBrowser.disconnect()
+            val tts=TTSController()
+            //tts.destroy()
         } catch (e: Exception) {
         }
     }
@@ -410,6 +409,42 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
         }
         throw java.lang.Exception()
     }
+    fun prepareItemOnStart(){
+        val db = DBProvider.of(DBTableName.storyindex, applicationContext) as StoryIndexDB
+        val rootpath=db.getPATH("root")
+        val bookMark=_loadBookMark(rootpath)
+        bookMark?.let {
+            try {
+               val hoge = db.getLibraryIndexItem(bookMark.path)//.copy(position = bookMark.position)
+                _Prepare_Item(hoge,it.startindex)
+                //hoge.position=bookMark.position
+            }catch (e:java.lang.Exception){}
+        }
+    }
+    fun _Prepare_Item(libraryItemModel: LibraryItemModel, startindex:Int){
+        val link =DataStore.getNovelFile(applicationContext, DataStore.getConvertedURL( libraryItemModel.model.url))
+        if(link.exists()){
+            val  db : StoryIndexDB = DBProvider.of(DBTableName.storyindex,applicationContext) as StoryIndexDB;
+            //val files=db.getsortedAllfromparent(bookMark.rootpath)
+            //val items=db.getsortedLibraryItemsfromParenturl(libraryItemModel.parent_url)
+            //val ls=items.map{ it ->it.model.url }
+
+            var position=0
+            PlayList.done()
+            PlayList.urllist.forEachIndexed{index,it->run{
+                if(it==libraryItemModel.model.url) {
+                    position = index
+                }
+            }}
+            PlayList.current_number=position
+
+            //PlayList.setup(ls,position,libraryItemModel.model.parent_path)
+            val file = File(libraryItemModel.model.path)
+            MusicLibrary.setdata(db.getStoryIndexItem(libraryItemModel.model.url), startindex)
+            MediaControllerCompat.getMediaController(this).transportControls.prepare()
+        }
+    }
+
     fun Play_Item(libraryItemModel: LibraryItemModel,startindex:Int){
         val link =DataStore.getNovelFile(applicationContext, DataStore.getConvertedURL( libraryItemModel.model.url))
         if(link.exists()){
@@ -529,7 +564,7 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
         navController.navigate(R.id.action_navigation_menu_to_navigation_web,
             WebFragment.build {
                 //filesList[adapterPosition]
-                defaulturl=HTMLFactory.from(fileModel.mode).get_defaulturl()
+                defaulturl=HTMLFactory.from(fileModel.mode)?.get_defaulturl() ?:""
             })
     }
 
@@ -637,40 +672,47 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
         super.onDestroy()
         MediaControllerCompat.getMediaController(this).transportControls.stop()
        // unregisterReceiver();
+        val tts=TTSController()
+        tts.destroy();
         DataStore.check_window=false
       //  MediaPlaybackService.NotificationConst
     }
+    fun _loadBookMark(rootpath:String):BookMark?{
+        val  db : StoryIndexDB = DBProvider.of(DBTableName.storyindex,applicationContext) as StoryIndexDB;
+        //val files=db.getsortedAllfromparent(bookMark.rootpath)
+        //val bk=BookMark_Open(URL,requireContext())
+        //val parent=File(bookmark.path).parent+"/"
+        val bookMark= BookMark_Open(rootpath,this)
+            ?: return null//BookMark(PlayList.pathlist[0],10);
+        val parent=db.getPARENTURL(bookMark.path)
+        val ls=db.getsortedAllurlsfromParenturl(parent!!)
+        PlayList.setup(ls,parent)
+
+
+        PlayList.setCurrent_number(bookMark.position)//ブックマークボタン押したときのplaylistt対策
+       return bookMark
+    }
     override fun onBookMark(rootpath:String) {
 
-        val bookMark= BookMark_Open(rootpath,this)
-        if(bookMark==null) {
-            return//BookMark(PlayList.pathlist[0],10);
+        val bookMark=_loadBookMark(rootpath)
+        bookMark?.let {
+            try {
+                val db = DBProvider.of(DBTableName.storyindex, applicationContext) as StoryIndexDB
+                val hoge = db.getLibraryIndexItem(bookMark.path)//.copy(position = bookMark.position)
+               Play_Item(hoge,it.startindex)
+                //hoge.position=bookMark.position
+            }catch (e:java.lang.Exception){}
         }
-        PlayList.setCurrent_number(bookMark.position)//ブックマークボタン押したときのplaylistt対策
-        try {
-            val db = DBProvider.of(DBTableName.storyindex, applicationContext) as StoryIndexDB
-            val hoge = db.getLibraryIndexItem(bookMark.path)//.copy(position = bookMark.position)
-            //hoge.position=bookMark.position
-            Play_Item(hoge, bookMark.startindex)
-        }catch (e:java.lang.Exception){}
+
        // Play_Item(PlayList.pathlist[0],10)
     }
 
     override fun onReload(url: String,newOnly:Boolean) {
      //   TODO("Not yet implemented")
-        val db=DBProvider.of(DBTableName.storyindex,applicationContext) as StoryIndexDB
-        lateinit var threadfactory:HTMLFactory;
-       // val currentlist= getLibraryItemsFromURL(url,applicationContext)
-        if(url.contains("ncode")){
-            threadfactory=NarouFactory()
-        }
-        else if(url.contains("kakuyomu")){
-            threadfactory=KakuyomuFactory()
-        }
-        else if(url.contains("wattpad")){
-            threadfactory=WattpadFacotry()
-        }
-        else {return}
+        NovelDownloader.update(url,newOnly,applicationContext, { updateContentOfCurrentFragment() })
+       /* val db=DBProvider.of(DBTableName.storyindex,applicationContext) as StoryIndexDB
+        ///lateinit var threadfactory:HTMLFactory;
+       val threadfactory=HTMLFactory.from(url)
         threadfactory.parse(url)
         var urlls=threadfactory.getChildURLs()
 
@@ -698,7 +740,7 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
                 Thread.sleep(1000)
             }
 
-        }
+        }*/
        /* val db=DBProvider.of(DBTableName.storyindex,applicationContext) as StoryIndexDB
         val updatedb=DBProvider.of(DBTableName.update_check,applicationContext) as UpdateCheckDB
      //   updatedb.insertData(UpdateCheckDB(db.geturl(,rootpath),1)as DBModel )
@@ -753,7 +795,7 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
             }
         }*/
     }
-    fun file_update(factory:HTMLFactory,url:String,parent:String){
+   /* fun file_update(factory:HTMLFactory,url:String,parent:String){
         val index=factory.getIndex()
         val title=factory.getTitle()
         val db=DBProvider.of(DBTableName.storyindex,applicationContext) as StoryIndexDB
@@ -769,7 +811,7 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
                     link = DataStore.getConvertedURL(url)
                 )
                 )
-            saveNovel(url,factory,applicationContext,File(parent))
+            //saveNovel(url,factory,applicationContext,File(parent))
         }
         catch(e:Exception){
             db.updateData(
@@ -789,8 +831,8 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
         if(updated){
             //saveNovel()
         }
-    }
-    fun saveNovel(url:String?,threadfactory: HTMLFactory,threadcontext:Context?,folder: File){
+    }*/
+    /*fun saveNovel(url:String?,threadfactory: HTMLFactory,threadcontext:Context?,folder: File){
         //fun Save(url:String?,threadfactory: HTMLFactory,threadcontext:Context?,folder: File){
             val title=threadfactory.getTitle()
             val stringList=threadfactory.getTexts()
@@ -811,7 +853,7 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
             )
 
        // }
-    }
+    }*/
     fun FileUtilDelete(model:LibraryItemModel,context: Context){
         //val db=DBProvider.of(DBTableName.storyindex) as StoryIndexDB
        // val path=db.getPATH(url)

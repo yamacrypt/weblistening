@@ -21,9 +21,9 @@ open class HTMLFactory(){
         return language
     }
     companion object{
-        public fun from(path:String?): HTMLFactory {
+        public fun from(path:String?): HTMLFactory? {
             if(path==null)
-                return NarouFactory()
+                return null
             val prefix = "://"
             //val split=path.split(prefix)
             if(path.contains("ncode.syosetu.com/")) {
@@ -49,8 +49,8 @@ open class HTMLFactory(){
             }*/
            // return YOMOU
         }
-        public fun from(mode:Int):HTMLFactory{
-            var htmlfactory:HTMLFactory=NarouFactory();
+        public fun from(mode:Int):HTMLFactory?{
+            var htmlfactory:HTMLFactory?=null
             when(mode){
                 YOMOU->{
                     htmlfactory=NarouFactory()
@@ -83,6 +83,7 @@ open class HTMLFactory(){
         } catch (e: Exception) {
 
         }
+        Thread.sleep(3000)
     }
     open public  fun getTitle():String?{
         TODO()

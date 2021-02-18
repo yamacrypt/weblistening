@@ -27,8 +27,24 @@ public class TTSController {
     static boolean isInitialized=false;
     static boolean startrequest=false;
 
-    public void shutdown() {
+   /* public void shutdown() {
         tts.shutdown();
+    }*/
+
+    public void destroy() {
+        isInitialized=false;
+        if (tts != null) {
+
+            try {
+                tts.stop();
+            }
+            catch (Exception ignored){}
+            try {
+                tts.shutdown();
+            }
+            catch (Exception ignored){}
+
+        }
     }
 
     public interface onFinishedListener{
@@ -43,6 +59,7 @@ public class TTSController {
     }
     void Init(String language,int index){
         isInitialized=false;
+        startrequest=false;
         //Locale locale= Locale.forLanguageTag(language);
         SharedPreferences prefs= DataStore.getSharedPreferences(context);
         String lan=prefs.getString(DataStore.languageKey,"ja");
@@ -51,6 +68,7 @@ public class TTSController {
             tts.stop();
         }
         catch (Exception e){}
+        destroy();
         tts=new TextToSpeech(context,new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
@@ -65,7 +83,9 @@ public class TTSController {
                     }
                     isInitialized=true;
                     if(startrequest){
+
                         speak(index);
+
                     }
                    //
                     // speak(index);
@@ -228,6 +248,9 @@ public class TTSController {
                         tts.speak(stringList.get(number), TextToSpeech.QUEUE_FLUSH, null, "TAG");//speak();
                         playerViewModel.getPlayingstate().postValue(true);
                     } catch (Exception e) {
+                        Log.d("ERROR","init(js,number)");
+                        Init("ja",number);
+                        startrequest = true;
                     }
 
                 }
@@ -250,10 +273,7 @@ public class TTSController {
 
         speak(playerViewModel.getSpeakingnumber().getValue());
     }
-    public void s(){
-        tts.speak(stringList.get(0),TextToSpeech.QUEUE_FLUSH,null,"TAG");
 
-    }
     public void move(int amount){
         stop();
         speak(playerViewModel.getSpeakingnumber().getValue()+amount);
