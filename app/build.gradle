@@ -11,8 +11,8 @@ android {
         applicationId "com.yamacrypt.webaudionovel"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 26
-        versionName "3.8"
+        versionCode 29
+        versionName "4.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -52,6 +52,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.2'
     implementation 'androidx.mediarouter:mediarouter:1.2.0'
     implementation 'com.google.android.gms:play-services-ads:19.6.0'
+    implementation 'junit:junit:4.12'
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

@@ -179,28 +179,6 @@ public class PlayerFragment extends Fragment {
         };
         model.getSpeakingnumber().observe(getViewLifecycleOwner(),numberObserver);
         model.getMaxnumber().observe(getViewLifecycleOwner(),maxObserver);
-        /*new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (MainActivity.audioController.getMediaPlayer() != null) {
-                    try {
-                        //handler.sendMessage(msg);
-                        Message msg = new Message();
-                        msg.what = MainActivity.audioController.getNowTime();
-                        handler.sendMessage(msg);
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {}
-                }
-            }
-        }).start();*/
-       // Toolbar toolbar = (Toolbar)view.findViewById(R.id.player_toolbar);
-
-       /* TypedValue tv = new TypedValue();
-        int actionBarHeight
-        if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
-        {
-            actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
-        }*/
         mToolbar.setNavigationIcon(R.drawable.ic_group_collapse_13);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override

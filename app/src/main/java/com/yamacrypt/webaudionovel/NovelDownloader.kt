@@ -13,6 +13,7 @@ class NovelDownloader {
         fun download(url: String?, threadContext: Context, onSavedListener:()->Unit) {
             val threadFactory = HTMLFactory.from(url!!)
             //val threadcontext=context
+
             if (threadFactory != null) {
                 Filesave(threadFactory, threadContext, url,onSavedListener)
             }

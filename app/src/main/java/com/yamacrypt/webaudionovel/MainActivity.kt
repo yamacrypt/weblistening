@@ -81,10 +81,8 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
     private val backStackManager = BackStackManager()
     private lateinit var mBreadcrumbRecyclerAdapter: BreadcrumbRecyclerAdapter
     companion object {
-       // lateinit var audioController: AudioController
-      //  lateinit var ttsController: TTSController
-      // private var interstitialAd: InterstitialAd? = null
        lateinit var mInterstitialAd: InterstitialAd
+        var isInit :Boolean=true;
         private const val OPTIONS_DIALOG_TAG: String = "com.yamacrypt.filebrowsertest.main.options_dialog"
     }
 
@@ -115,10 +113,6 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
           connectionCallback,
           null
       )
-
-      /*  val adRequest = AdRequest.Builder().build()
-        val adview=findViewById<AdView>(R.id.adView)
-        adview.loadAd(adRequest)*/
         val pref = DataStore.getSharedPreferences(applicationContext)
       val initialized=pref.getBoolean("Initialized",false)
       if(!initialized) {
@@ -131,25 +125,6 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
           editor.putBoolean("Initialized",true)
           editor.apply()
       }
-        //audioController = AudioController(this, pref.getInt(DataStore.speedKey, 10))
-       // audioController!!.setListener(createListener())
-       // TTSService.ttsController=TTSController(this)
-        //ttsController= TTSController(this)
-      //  ttsController= TTSController(this)
-        // BottomNavigationView navView = findViewById(R.id.nav_view);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        /*AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
-                .build();*/
-
-        //supportActionBar = findViewById<Toolbar>(R.id.toolbar)
-        //setSupportActionBar( toolbar)
-        //NavigationUI.setupWithNavController(navView, navController);
-       /* if (pref.getInt(DataStore.review, 0) == 0) {
-            val reviewDialogFragment = ReviewDialogFragment.newInstance(this)
-            reviewDialogFragment.show(getSupportFragmentManager(), "ReviewDialogFragment")
-        }*/
         val model =PlayerViewModel()
         val windowObserver: Observer<PlayerViewModel.PlayData?> =
             Observer<PlayerViewModel.PlayData?> { playdata ->
@@ -164,44 +139,9 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
             state -> Play(state)
         }
        model.playingstate.observe(this,stateObserver)
-        //model.getPlaydata.observe()
-        //  Fragment speedfragment=new SpeedFragment();
-        //audioController=new AudioController(this);
-        //transaction = getSupportFragmentManager().beginTransaction();
-        /* transaction.add(R.id.container,speedfragment);
-        transaction.hide(speedfragment);
-        transaction.commit();*/
-        /*if (savedInstanceState == null) {
-            val filesListFragment = FilesListFragment.build {
-                path = Environment.getExternalStorageDirectory().absolutePath
-            }*/
 
-           // val host = NavHostFragment.create(R.navigation.menu_navigation)
-           // supportFragmentManager.beginTransaction().replace(R.id.navigation_home,filesListFragment).commit()
-       /*     supportFragmentManager.beginTransaction()
-                .add(R.id.container, filesListFragment)
-                .addToBackStack(Environment.getExternalStorageDirectory().absolutePath)
-                .commit()*/
-
-      //  }
-       // initViews()
         initBackStack()
-        //interstitialAd = newInterstitialAd()
-        //loadInterstitial()
-     /*  MobileAds.initialize(this, getString(R.string.app_id))
-       // MobileAds.initialize(this)
-        val mAdView = findViewById<AdView>(R.id.adView)
-        val adRequest = AdRequest.Builder().addTestDevice(getString(R.string.interstitial_ad_unit_id)).build()
-        mAdView.loadAd(adRequest)*/
 
-        /*val bar = findViewById<Toolbar>(R.id.tool_bar)
-        //toolbar=bar
-        val navController =
-            Navigation.findNavController(this, R.id.nav_main_fragment)
-        //setSupportActionBar(bar);
-        //NavigationUI.setupActionBarWithNavController(this, navController);
-        bar.setupWithNavController(navController)*/
-       // MobileAds.initialize(this) {}
       val intent = intent
       val action = intent.action
       if (Intent.ACTION_SEND == action) {
@@ -217,10 +157,7 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
                       //filesList[adapterPosition]
                       //mode=HTMLFactory.getMode(it)
                   })
-              //  var toast=Toast(applicationContext)
-              //// toast.setText(it)//makeText(applicationContext,extras)
 
-              // Update UI to reflect text being shared
           }
 
       }
@@ -243,17 +180,6 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
         }
     }
 
-    /* private fun initViews() {
-        // setSupportActionBar(toolbar)
-
-         breadcrumbRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-         mBreadcrumbRecyclerAdapter = BreadcrumbRecyclerAdapter()
-         breadcrumbRecyclerView.adapter = mBreadcrumbRecyclerAdapter
-         mBreadcrumbRecyclerAdapter.onItemClickListener = {
-             supportFragmentManager.popBackStack(it.path, 2);
-             backStackManager.popFromStackTill(it)
-         }
-     }*/
     private fun initBackStack() {
         backStackManager.onStackChangeListener = {
           // updateAdapterData(it)
@@ -262,16 +188,6 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
         //backStackManager.addToStack(libraryItemModel = LibraryItemModel(DataStore.getShortCutFile(this,"").absolutePath, FileType.FOLDER, "/", 0.0))
     }
 
-   /* private fun updateAdapterData(files: List<FileModel>) {
-        mBreadcrumbRecyclerAdapter.updateData(files)
-        if (files.isNotEmpty()) {
-            breadcrumbRecyclerView.smoothScrollToPosition(files.size - 1)
-        }
-    }*/
-   /*override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }*/
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -286,12 +202,6 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
         val view = LayoutInflater.from(this).inflate(R.layout.dialog_enter_name, null)
         view.createButton.setOnClickListener {
             val fileName = view.nameEditText.text.toString()
-           /* if (fileName.isNotEmpty()) {
-                createNewFile(fileName, backStackManager.top.path) { _, message ->
-                    bottomSheetDialog.dismiss()
-                    updateContentOfCurrentFragment()
-                }
-            }*/
         }
         bottomSheetDialog.setContentView(view)
         bottomSheetDialog.show()
@@ -301,13 +211,6 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
         val view = LayoutInflater.from(this).inflate(R.layout.dialog_enter_name, null)
         view.createButton.setOnClickListener {
             val fileName = view.nameEditText.text.toString()
-           /* if (fileName.isNotEmpty()) {
-                createNewFolder(fileName, backStackManager.top.path) { _, message ->
-                    bottomSheetDialog.dismiss()
-                    //coordinatorLayout.createShortSnackbar(message)
-                    updateContentOfCurrentFragment()
-                }
-            }*/
         }
         bottomSheetDialog.setContentView(view)
         bottomSheetDialog.show()
@@ -334,13 +237,9 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
             }
         }
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
-            // 曲情報の変化に合わせてUI更新
-           // binding.title.text = metadata?.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
-           // binding.artist.text = metadata?.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
-           // metadata?.getBitmap(MediaMetadataCompat.METADATA_KEY_ART)?.also { image ->
-           //     binding.art.setImageBitmap(image)
+
             }
-        }
+    }
     private val subscriptionCallback = object : MediaBrowserCompat.SubscriptionCallback() {
 
         override fun onChildrenLoaded(
@@ -353,6 +252,9 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
     }
     override fun onStart() {
         super.onStart()
+        if(!isInit)
+            return;
+        isInit=false;
         val mToolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.tool_bar)//.findViewById(R.id.tool_bar)
         mToolbar.toolbar_progress_bar?.isEnabled=false
         mToolbar.toolbar_progress_bar?.isVisible=false
@@ -449,9 +351,6 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
         val link =DataStore.getNovelFile(applicationContext, DataStore.getConvertedURL( libraryItemModel.model.url))
         if(link.exists()){
             val  db : StoryIndexDB = DBProvider.of(DBTableName.storyindex,applicationContext) as StoryIndexDB;
-            //val files=db.getsortedAllfromparent(bookMark.rootpath)
-            //val items=db.getsortedLibraryItemsfromParenturl(libraryItemModel.parent_url)
-            //val ls=items.map{ it ->it.model.url }
 
             var position=0
             PlayList.done()
@@ -479,15 +378,6 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
             //val files=db.getsortedAllfromparent(bookMark.rootpath)
             val items=db.getsortedLibraryItemsfromParenturl(bookMark.rootpath)
             val ls=items.map{ it ->it.model.url }
-            //PlayList.setup(ls,bookMark.position,bookMark.rootpath)
-            // Log.d("TAG",bookMark.path)
-            //Log.d("TAG",bookMark.startindex.toString())
-            //val intent = Intent(this, TTSService::class.java)
-            //intent.putExtra("MSG", "Do something")
-            //startService(intent)
-           // TTSService().enqueueWork(this, intent)
-            // val serviceIntent = Intent(this,ttsService::class.java)
-            // startService(serviceIntent)
             val fileController = FileController(this)
             //val file=File(this.filesDir,fileModel.path)
             val file = File(bookMark.path)
@@ -515,42 +405,6 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
           //  val bookMark = BookMark(libraryItemModel.path, 0, File(libraryItemModel.path).parent,libraryItemModel.position)
                 //Play_Item(bookMark);
             Play_Item(libraryItemModel,0)
-            //updateContentOfCurrentFragment()
-           /* val pref = DataStore.getSharedPreferences(this)
-            if (pref.getInt(DataStore.review, 0) == 0) {
-                val reviewDialogFragment = ReviewDialogFragment.newInstance(this)
-                reviewDialogFragment.show(getSupportFragmentManager(), "ReviewDialogFragment")
-            }*/
-           /* val manager = FakeReviewManager(this)
-            val request = manager.requestReviewFlow()
-           request.addOnCompleteListener { task: Task<ReviewInfo?> ->
-                when {
-                    task.isSuccessful -> {
-                        val reviewInfo = task.result
-                        val flow = manager.launchReviewFlow(this, reviewInfo)
-                        flow.addOnCompleteListener { task1: Task<Void?>? ->
-                            // The flow has finished.
-                        }
-                    }
-                    else -> {
-                        // error or something
-                    }
-                }
-            }*/
-           // playBtnClick(play_button)
-           // TTSService.ttsController.start()
-                //pb.load()
-            //playing_novel(fileModel)
-            // launchFileIntent(fileModel)
-          /*  if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                // サービス内で実行されるTextToSpeechに渡す値を設定
-                val serviceIntent = Intent(this, ForegroundService::class.java)
-                serviceIntent.putExtra("langLocale", "jp")
-                serviceIntent.putExtra("input", "input")
-                // フォアグラウンドサービス開始
-                startForegroundService(serviceIntent)
-            }*/
-           // showInterstitial()
         }
 
     }
@@ -611,26 +465,7 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
         MenuFragment.popupView.layoutParams = linearLayoutLayoutPrams
         val playBtn =
             MenuFragment.popupView.findViewById<Button>(R.id.play_button)
-        /*play_button?.setOnClickListener{
-            val state = mediaController.playbackState?.state
-            if (state == PlaybackStateCompat.STATE_PLAYING) {
-                mediaController.transportControls.pause()
-                //  playBtn?.foreground = this.getDrawable(R.drawable.stop)
-            } else {
-                mediaController.transportControls.play()
-                // playBtn?.foreground = this.getDrawable(R.drawable.play)
-            }
 
-        }
-        backbutton?.setOnClickListener{
-            mediaController.transportControls.skipToNext()
-        }*/
-
-        /* if (TTSService.ttsController.isSpeaking) {
-            playBtn.foreground = this.getDrawable(R.drawable.stop)
-        } else {
-            playBtn.foreground = this.getDrawable(R.drawable.playicon)
-        }*/
         if (DataStore.check_window) {
             //layout.removeViewAt(1)
         }
@@ -710,150 +545,9 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
     override fun onReload(url: String,newOnly:Boolean) {
      //   TODO("Not yet implemented")
         NovelDownloader.update(url,newOnly,applicationContext, { updateContentOfCurrentFragment() })
-       /* val db=DBProvider.of(DBTableName.storyindex,applicationContext) as StoryIndexDB
-        ///lateinit var threadfactory:HTMLFactory;
-       val threadfactory=HTMLFactory.from(url)
-        threadfactory.parse(url)
-        var urlls=threadfactory.getChildURLs()
 
-        if (urlls != null) {
-            if(newOnly) {
-                val filter=db.getsortedAllurlsfromParenturl(url);
-                //val MutableList<String>? fil=
-               // val hoge=urlls
-                 urlls= urlls.toMutableList().filter{!filter.contains(it) }.toMutableList()
-            }
-            val parent=db.getPATH(url)
-            //val foldername=threadfactory.getTitle()
-           // val folder=DataStore.CreateFolder(threadcontext,foldername)
-           // val db:StoryIndexDB= DBProvider.of(DBTableName.storyindex,requireContext() as StoryIndexDB
-            /*db.insert_and_update(StoryIndexModel(path=foldername!!,
-                parent_path=DataStore.getShortCutFile(context, "").toString(),
-                index = 0,url=url!!))*/
-            for (childurl in urlls){
-                threadfactory.parse(childurl)
-                //   Filesave(threadfactory,threadcontext,childurl)
-                try {
-                    file_update(threadfactory,childurl,parent);
-                }
-                catch (e:Exception){break}
-                Thread.sleep(1000)
-            }
-
-        }*/
-       /* val db=DBProvider.of(DBTableName.storyindex,applicationContext) as StoryIndexDB
-        val updatedb=DBProvider.of(DBTableName.update_check,applicationContext) as UpdateCheckDB
-     //   updatedb.insertData(UpdateCheckDB(db.geturl(,rootpath),1)as DBModel )
-      // val files=getAllFilesFromRoot(File(rootpath))
-        val files=File(url).listFiles()
-            .filter {  !it.name.startsWith(".") }
-            .filter { !it.isDirectory }
-            .toList().map { it->it.name }
-        val urllist:List<Pair<String,String>> =files.zip(db.geturls(url,files))
-
-       urllist.forEach{it->
-            run {
-                lateinit var factory:HTMLFactory
-               if(it.second.contains("ncode")){
-                   factory=NarouFactory()
-               }
-                else if(it.second.contains("kakuyomu")){
-                   factory=KakuyomuFactory()
-               }
-                else if(it.second.contains("wattpad")){
-                   factory=WattpadFacotry()
-               }
-
-                try {
-                    factory.parse(it.second)
-                   /* if(factory.BOXcheck){
-                        val urlls=factory.getChildURLs()
-                        if (urlls != null) {
-                           // val foldername=factory.getTitle()
-                           // val folder=DataStore.CreateFolder(threadcontext,foldername)
-                            //val db:StoryIndexDB= DBProvider.of(DBTableName.storyindex,applicationContext)) as StoryIndexDB
-                           //// db.insert_and_update(StoryIndexModel(path=foldername!!,
-                              //  parent_path=DataStore.getShortCutFile(context, "").toString(),
-                             //   index = 0,url=url!!))
-                            for (childurl in urlls){
-                                factory.parse(childurl)
-                                //   Filesave(threadfactory,threadcontext,childurl)
-                                try {
-                                    file_update()
-                                }
-                                catch (e:Exception){break}
-                                Thread.sleep(1000)
-                            }
-
-                        }
-                    }*/
-                   // else{
-                    file_update( factory,url,it)
-                } catch (e: Exception) {
-                }
-                Thread.sleep(1000)
-            }
-        }*/
     }
-   /* fun file_update(factory:HTMLFactory,url:String,parent:String){
-        val index=factory.getIndex()
-        val title=factory.getTitle()
-        val db=DBProvider.of(DBTableName.storyindex,applicationContext) as StoryIndexDB
-        try {
-            db.insertData(
-                StoryIndexModel(
-                    path = title!!,
-                    parent_path = parent,
-                    index = index!!,
-                    url = url,
-                    language =factory.get_language(),
-                    novel_name = title,
-                    link = DataStore.getConvertedURL(url)
-                )
-                )
-            //saveNovel(url,factory,applicationContext,File(parent))
-        }
-        catch(e:Exception){
-            db.updateData(
-                StoryIndexModel(
-                    path = title!!,
-                    parent_path = parent,
-                    index = index!!,
-                    url = url,
-                    language =factory.get_language(),
-                    novel_name = title,
-                    link = DataStore.getConvertedURL(url))
-                )
 
-        }
-        updateContentOfCurrentFragment()
-        val updated=false
-        if(updated){
-            //saveNovel()
-        }
-    }*/
-    /*fun saveNovel(url:String?,threadfactory: HTMLFactory,threadcontext:Context?,folder: File){
-        //fun Save(url:String?,threadfactory: HTMLFactory,threadcontext:Context?,folder: File){
-            val title=threadfactory.getTitle()
-            val stringList=threadfactory.getTexts()
-            val downloader= FileController(threadcontext)
-            val convertedurl=DataStore.getConvertedURL(url)
-            val novelfile= DataStore.getNovelFile(threadcontext,convertedurl)
-            val titlefile= DataStore.getShortCutFile(threadcontext,title,folder)
-            val db = DBProvider.of(DBTableName.storyindex, applicationContext) as StoryIndexDB
-
-            downloader.WriteNovel(novelfile,stringList,threadfactory.get_language())
-            //val sc= FileController.ShortCut(title,"",convertedurl,stringList!!.size,threadfactory.get_language())
-            //downloader.WriteShortCut(titlefile,sc)
-            db.insert_and_update(
-                StoryIndexModel(title!!,folder.toString(),threadfactory.getIndex()!!,url!!,
-                        language =threadfactory.get_language(),
-                    novel_name = title,
-                    link = DataStore.getConvertedURL(url))
-            )
-
-       // }
-    }*/
     fun FileUtilDelete(model:LibraryItemModel,context: Context){
         //val db=DBProvider.of(DBTableName.storyindex) as StoryIndexDB
        // val path=db.getPATH(url)
@@ -937,9 +631,7 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
         var novelpath:String=""
         try {
             val fileController = FileController(context)
-           // val file = File(model.model.path)
-           // val shortcut = fileController.ReadShortCut(file)
-           // DataStore.getNovelFile(context, shortcut.novelname).delete()
+
              val novel= DataStore.getNovelFile(context, model.model.novel_name)
             //val security = System.getSecurityManager()
             //val a=security?.checkDelete(novel.path)
@@ -955,23 +647,10 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
         }
             FileUtilsDeleteFile(model,context)
     }
-    /*private fun SetIcon(b: Boolean) {
-        if(b){
-            NavigationText.isEnabled=false
-            checkBox.isEnabled=true
-        }
-        else{
-            NavigationText.isEnabled=true
-            checkBox.isEnabled=false
-        }
-    }*/
+
 
     private fun addFileFragment(libraryItemModel: LibraryItemModel) {
-        /*val filesListFragment = FilesListFragment.build {
-            path = fileModel.path
-        }*/
-      //  backStackManager.addToStack(libraryItemModel)
-        // navigateUpTo(filesListFragment);
+
         val navController =
             Navigation.findNavController(this,
                 R.id.nav_menu_fragment
@@ -979,11 +658,7 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
         navController.navigate(R.id.action_myself,LibraryFragment.build2 {
             url= libraryItemModel.model.url
         })
-        /*
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.nav_menu_fragment, filesListFragment)
-        fragmentTransaction.addToBackStack(fileModel.path)
-        fragmentTransaction.commit()*/
+
 
     }
     override fun onBackPressed() {
@@ -998,10 +673,6 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
             backStackManager.popFromStack()
         }
 
-        // do something with f
-        /* if (supportFragmentManager.backStackEntryCount == 0) {
-             finish()
-         }*/
     }
 
     override fun onDoReviewButtonClick() {
@@ -1010,16 +681,6 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
 
     override fun onResume() {
         super.onResume()
-        /*val nowdate: String = getNowDate()
-        val pref = DataStore.getSharedPreferences(this)
-        val resetdate = pref.getString(DataStore.dateKey, "null")
-        if (nowdate == resetdate) {
-        } else {
-            val editor = pref.edit()
-            editor.putString(DataStore.dateKey, nowdate)
-            editor.putInt(DataStore.dlcountKey, 10)
-            editor.apply()
-        }*/
     }
 
     fun getNowDate(): String {

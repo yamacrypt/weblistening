@@ -97,9 +97,11 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     // override fun on
    fun _onSkipToNext() {
         try {
-            ttscontroller.next()
-            mediaSession.controller.transportControls.prepare()
-            mediaSession.controller.transportControls.play()
+            var isEnd:Boolean=ttscontroller.next();
+            if(!isEnd) {
+                mediaSession.controller.transportControls.prepare()
+                mediaSession.controller.transportControls.play()
+            }
         } catch (e: Exception) {
         }
         // ttscontroller.setup(MusicLibrary.getTTS_Item(baseContext))
@@ -130,36 +132,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
         override fun onFastForward() {
             _onSkipToNext()
-            //menuitem.setEnabled(false)
-          //  ttscontroller.move(1)
 
-           /* ttscontroller.reset()
-            val bookmark = BookMark(
-                PlayList.getPlayingPath(),
-               ttscontroller.currentIndex,
-                PlayList.getRootpath(),
-                PlayList.getCurrent_number()
-            )
-            BookMark_Save(bookmark, applicationContext) //BookMark_Save()
-*/
-            //menuitem.setIcon(R.drawable.checkicon)
-
-           /* val timer = Timer()
-            val handler = Handler()
-            val timerTask: TimerTask = object : TimerTask() {
-                override fun run() {
-                    try {
-                        handler.post {
-                           // menuitem.setIcon(R.drawable.bookmark_player)
-                            timer.cancel()
-                          //  menuitem.setEnabled(true)
-                        }
-                        //  menuitem.setIcon(R.drawable.dlicon);
-                    } catch (e: Exception) {
-                    }
-                }
-            }
-            timer.schedule(timerTask, 500)*/
         }
 
         override fun onSkipToPrevious() {

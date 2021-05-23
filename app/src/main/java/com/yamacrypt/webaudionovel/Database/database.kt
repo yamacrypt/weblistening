@@ -59,9 +59,9 @@ enum class DBTableName{
 }
 class StoryIndexDB(applicationContext:Context) : BaseDB(applicationContext){
     init {
-        dbVersion=2;
+        dbVersion=3;
         tableName="StoryIndex";
-        initsql="create table if not exists $tableName(parent_path TEXT , path TEXT,url TEXT PRIMARY KEY , story_index INTEGER, novel_name TEXT,link TEXT,language TEXT)";
+        initsql="create table if not exists $tableName(parent_path TEXT , path TEXT,url TEXT PRIMARY KEY , story_index INTEGER, novel_name TEXT,link TEXT,language TEXT,isNew INTEGER)";
         upgradesql="ALTER TABLE $tableName ADD COLUMN isNew INTEGER DEFAULT 1";
 
     }
@@ -563,7 +563,10 @@ class DBHelper(context: Context, databaseName:String, factory: SQLiteDatabase.Cu
 
     override fun onUpgrade(database: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         if (oldVersion < newVersion) {
-            database?.execSQL(upgradesql)
+            try {
+                database?.execSQL(upgradesql)
+            }
+            catch(e:Exception){}
         }
     }
 }

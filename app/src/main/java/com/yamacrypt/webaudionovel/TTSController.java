@@ -341,10 +341,10 @@ public class TTSController {
         //start();
         next();
     }*/
-    void nextwithoutad(){
+    /*void nextwithoutad(){
         while(!nextcheck()){}
 
-    }
+    }*/
     public void back(){
         int temp=PlayList. current_number;
         try {
@@ -356,33 +356,24 @@ public class TTSController {
         }
         //playerViewModel.getSpeakingnumber().setValue(0);
     }
-    public void next(){
+    public Boolean next(){
+        Boolean isEnd;
         int temp=PlayList. current_number;
         try {
-            nextwithoutad();
+            isEnd=nextcheck();//nextwithoutad();
         }
         catch (Exception e){
             PlayList.current_number=temp;
+            isEnd=true;
         }
-
-      /*  if(DataStore.ad_time==0) {
-            DataStore.ad_time=DataStore.default_adtime;
-            if (mInterstitialAd.isLoaded()) {
-                mInterstitialAd.show();
-            } else {
-                Log.d("TAG", "The interstitial wasn't loaded yet.");
-            }
-        }
-        else{
-            DataStore.ad_time-=1;
-            nextwithoutad();
-        }*/
+        return isEnd;
 
 
 
     }
+
     Boolean nextcheck(){
-        if(PlayList. current_number<PlayList.maxnumber-1) {
+        while(PlayList. current_number<PlayList.maxnumber-1) {
             PlayList.current_number++;
             String url = PlayList.urllist.get(PlayList.current_number);
 
@@ -395,12 +386,12 @@ public class TTSController {
                         StoryIndexDB db = (StoryIndexDB) DBProvider.Companion.of(DBTableName.storyindex, context);
                         StoryIndexModel sc=db.getStoryIndexItem(url);
                         MusicLibrary.INSTANCE.setdata(sc, 0);
-                        return true;
+                        return false;
                     }
                     catch (Exception e){
 
                     }
-                    return false;
+                    //return false;
 
               //  }
                // else{
