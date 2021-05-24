@@ -10,6 +10,12 @@
         android:visible="true"
         app:showAsAction="always|withText"></item>
     <item
+        android:id="@+id/library_dictionary"
+        android:icon="@drawable/reload"
+        android:title="辞書"
+        android:visible="true"
+        app:showAsAction="always|withText"></item>
+    <item
         android:id="@+id/library_menuitem"
         android:enabled="false"
         android:icon="@drawable/bookmark"

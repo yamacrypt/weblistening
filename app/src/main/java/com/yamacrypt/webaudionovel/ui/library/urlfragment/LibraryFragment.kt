@@ -5,7 +5,6 @@ package com.yamacrypt.webaudionovel.ui.library.urlfragment
 
 import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Handler
@@ -18,14 +17,17 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.dynamic.SupportFragmentWrapper
 import com.yamacrypt.webaudionovel.DataStore
 import com.yamacrypt.webaudionovel.Database.DBProvider
 import com.yamacrypt.webaudionovel.Database.DBTableName
 import com.yamacrypt.webaudionovel.Database.StoryIndexDB
-import com.yamacrypt.webaudionovel.PlayList
 import com.yamacrypt.webaudionovel.R
+import com.yamacrypt.webaudionovel.tts.layout.dictionary_dialog.DictionaryDialog
+import com.yamacrypt.webaudionovel.ui.DictionaryFragment
 import com.yamacrypt.webaudionovel.ui.library.fileservice.FileChangeBroadcastReceiver
 import com.yamacrypt.webaudionovel.ui.library.models.BookMark_Open
+import kotlinx.android.synthetic.main.dictionary_dialog.*
 import kotlinx.android.synthetic.main.fragment_files_list.*
 import kotlinx.android.synthetic.main.tool_bar.view.*
 import kotlin.concurrent.thread
@@ -166,6 +168,22 @@ class LibraryFragment : Fragment(){
         }
         val reloaditem=menu.findItem(R.id.library_update)
         val check=URL!="root"&& mToolbar.toolbar_progress_bar?.isVisible==false
+        val dictionaryItem=menu.findItem(R.id.library_dictionary)
+        dictionaryItem.setOnMenuItemClickListener {
+            val dialogFragment = DictionaryDialog()
+            dialogFragment.show(childFragmentManager, "my_dialog");
+            /*AlertDialog.Builder(requireContext())
+                .setView(R.layout.dictionary_dialog)
+                .setTitle("読み登録")
+
+                .setNeutralButton("読み一覧",DialogInterface.OnClickListener{dialog, which ->
+                })
+                .setPositiveButton("登録する",DialogInterface.OnClickListener{dialog, which ->
+                    
+                })
+                .show()*/
+            true
+        }
         reloaditem.isEnabled=check
         reloaditem.isVisible=check
         reloaditem.setOnMenuItemClickListener {

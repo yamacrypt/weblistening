@@ -67,6 +67,7 @@ import com.yamacrypt.webaudionovel.ui.search.WebFragment
 import com.yamacrypt.webaudionovel.ui.search.selector.SelectWebFragment
 import com.yamacrypt.webaudionovel.ui.search.selector.WebItem
 import kotlinx.android.synthetic.main.dialog_enter_name.view.*
+import kotlinx.android.synthetic.main.dictionary_dialog.*
 import kotlinx.android.synthetic.main.fragment_player.*
 import kotlinx.android.synthetic.main.fragment_web.*
 import kotlinx.android.synthetic.main.smallwindow.*
@@ -271,7 +272,6 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
             super.onStop()
             MediaControllerCompat.getMediaController(this)?.unregisterCallback(controllerCallback)
             mediaBrowser.disconnect()
-            val tts=TTSController()
             //tts.destroy()
         } catch (e: Exception) {
         }
@@ -507,7 +507,7 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
         super.onDestroy()
         MediaControllerCompat.getMediaController(this).transportControls.stop()
        // unregisterReceiver();
-        val tts=TTSController()
+        val tts=TTSController.getInstance()
         tts.destroy();
         DataStore.check_window=false
       //  MediaPlaybackService.NotificationConst

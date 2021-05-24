@@ -11,10 +11,11 @@ import com.yamacrypt.webaudionovel.FileController
 import com.yamacrypt.webaudionovel.R
 import java.io.File
 
-class tts_Item(texts: List<String>,language:String,startindex:Int=0) {
+class tts_Item(texts: List<String>,language:String="ja",startindex:Int=0,url:String="root") {
     val texts: List<String> =texts;
     val language:String=language;
     val start_index=startindex;
+    val url:String=url
 }
 object MusicLibrary {
     private lateinit var storyIndexModel:StoryIndexModel

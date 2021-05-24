@@ -363,7 +363,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     }
     override fun onCreate() {
         super.onCreate()
-        ttscontroller=TTSController(baseContext)
+        ttscontroller=TTSController.Create(baseContext)
         ttscontroller.setListener {
             mediaSession.controller.transportControls.fastForward()
         }

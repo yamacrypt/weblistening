@@ -55,7 +55,7 @@ abstract class BaseDB(applicationContext:Context) {
 }
 
 enum class DBTableName{
-    storyindex,bookmark
+    storyindex,bookmark,dictionary
 }
 class StoryIndexDB(applicationContext:Context) : BaseDB(applicationContext){
     init {
@@ -538,6 +538,56 @@ class BookMarkDB (applicationContext:Context) : BaseDB(applicationContext){
         }
     }
 }
+class DictionaryDB(applicationContext: Context):BaseDB(applicationContext){
+    init {
+        dbName = "DictionaryDB.db"
+        tableName="Dictionary";
+        initsql="create table if not exists $tableName(raw TEXT,convert TEXT,parent_path TEXT PRIMARY KEY)";
+        upgradesql=""
+    }
+
+    public fun getDictionary(parent_path: String):HashMap<String,String>{
+        val dbHelper = loadHelper();
+        val database = dbHelper.readableDatabase
+        var res= hashMapOf<String,String>();
+        val cursor:Cursor =database.rawQuery("SELECT * FROM $tableName WHERE parent_path=?",
+            arrayOf(parent_path));
+        try {
+            while(cursor.moveToNext()) {
+                if(DEBUG_MODE) {
+                    /*var isNew=0
+                    try {
+                        isNew= cursor.getInt(cursor.getColumnIndex("isNew"))
+                    } catch (e: Exception) {
+                    }
+                    val hoge: StoryIndexModel = StoryIndexModel(
+                        path = cursor.getString(cursor.getColumnIndex("path")),
+                        parent_path = cursor.getString(cursor.getColumnIndex("parent_path")),
+                        index = cursor.getInt(cursor.getColumnIndex("story_index")),
+                        url = cursor.getString(cursor.getColumnIndex("url")),
+                        link = cursor.getString(cursor.getColumnIndex("link")),
+                        language = cursor.getString(cursor.getColumnIndex("language")),
+                        novel_name = cursor.getString(cursor.getColumnIndex("novel_name")),
+                        isNew = isNew
+                    )
+                    res.add(hoge);*/
+                }
+                val key=cursor.getString(cursor.getColumnIndex("raw"))
+                val value=cursor.getString(cursor.getColumnIndex("convert"))
+                res[key]=value
+                    /* File(
+                         cursor.getString(cursor.getColumnIndex("parent_path")),
+                         cursor.getString(cursor.getColumnIndex("path"))
+                     )*/
+
+            }
+        } finally {
+            cursor.close()
+            database.close()
+        }
+        return res
+    }
+}
 class DBProvider(applicationContext:Context){
      val applicationContext:Context=applicationContext;
      companion object {
@@ -545,6 +595,7 @@ class DBProvider(applicationContext:Context){
              when(dbname){
                  DBTableName.storyindex->return  StoryIndexDB(applicationContext);
                  DBTableName.bookmark->return BookMarkDB(applicationContext)
+                 DBTableName.dictionary->return DictionaryDB(applicationContext)
                  else-> error("invalid DBTableName");
              }
          }

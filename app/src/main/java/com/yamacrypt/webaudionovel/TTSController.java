@@ -12,6 +12,8 @@ import com.yamacrypt.webaudionovel.Database.StoryIndexDB;
 import com.yamacrypt.webaudionovel.Database.StoryIndexModel;
 import com.yamacrypt.webaudionovel.MusicService.MusicLibrary;
 import com.yamacrypt.webaudionovel.MusicService.tts_Item;
+import com.yamacrypt.webaudionovel.tts.TTSDictionary;
+import com.yamacrypt.webaudionovel.tts.TTSDictionaryBuilder;
 import com.yamacrypt.webaudionovel.ui.PlayerViewModel;
 import com.yamacrypt.webaudionovel.ui.library.models.BookMark;
 import com.yamacrypt.webaudionovel.ui.library.models.BookMarkKt;
@@ -22,11 +24,10 @@ import java.util.List;
 import java.util.Locale;
 
 public class TTSController {
-    Context context;
+    static Context context;
     private static TextToSpeech tts;
     static boolean isInitialized=false;
     static boolean startrequest=false;
-
    /* public void shutdown() {
         tts.shutdown();
     }*/
@@ -46,6 +47,16 @@ public class TTSController {
 
         }
     }
+    static TTSController ttsController;
+    public static TTSController Create(Context context){
+        ttsController= new TTSController(context);
+        return ttsController;
+    }
+    public static TTSController getInstance(){
+        if(ttsController==null)
+            throw  new NullPointerException();
+        return ttsController;
+    }
 
     public interface onFinishedListener{
         void onFinished();
@@ -61,9 +72,13 @@ public class TTSController {
         isInitialized=false;
         startrequest=false;
         //Locale locale= Locale.forLanguageTag(language);
-        SharedPreferences prefs= DataStore.getSharedPreferences(context);
-        String lan=prefs.getString(DataStore.languageKey,"ja");
-        Locale locale= Locale.forLanguageTag(lan);
+        String lan ="ja";
+        try {
+            SharedPreferences prefs = DataStore.getSharedPreferences(context);
+            lan = prefs.getString(DataStore.languageKey, "ja");
+        }
+        catch (Exception e){}
+        final Locale locale = Locale.forLanguageTag(lan);
         try{
             tts.stop();
         }
@@ -144,10 +159,11 @@ public class TTSController {
         });
 
     }*/
-    public TTSController(Context context){
+   TTSDictionaryBuilder ttsDictionaryBuilder;
+     TTSController(Context context){
         this.context=context;
         playerViewModel=new PlayerViewModel();
-
+        this.ttsDictionaryBuilder=new TTSDictionaryBuilder(context);
        /* mInterstitialAd.setAdListener(new AdListener(){
             @Override
             public void onAdClosed() {
@@ -158,20 +174,7 @@ public class TTSController {
         });*/
 
     }
-    public TTSController(){
-        //this.context=context;
-        //playerViewModel=new PlayerViewModel();
 
-       /* mInterstitialAd.setAdListener(new AdListener(){
-            @Override
-            public void onAdClosed() {
-                super.onAdClosed();
-                nextwithoutad();
-                mInterstitialAd.loadAd(new AdRequest.Builder().build());
-            }
-        });*/
-
-    }
     //int number;
 
   /*  public int getMaxnumber() {
@@ -203,7 +206,7 @@ public class TTSController {
     }
 
     static List<String> stringList;
-    public void setup(@NotNull List<String> stringList,String language,int startindex){
+    /*public void setup(@NotNull List<String> stringList,String language,int startindex){
         Init(language,startindex);
         playerViewModel.getSpeakingnumber().postValue(startindex);
        // number =playerViewModel.getSpeakingnumber().getValue();
@@ -219,15 +222,17 @@ public class TTSController {
     public void setup(@NotNull List<String> stringList,String language){
       setup(stringList,language,0);
 
-    }
+    }*/
     public void setup(tts_Item item){
         Init(item.getLanguage(),item.getStart_index());
         playerViewModel.getSpeakingnumber().postValue(item.getStart_index());
+        ttsDictionary=ttsDictionaryBuilder.build((item.getUrl()));
         // number =playerViewModel.getSpeakingnumber().getValue();
         this.stringList=item.getTexts();
         //this.maxnumber=stringList.size()-2;
         playerViewModel.getMaxnumber().postValue(stringList.size()-1);
     }
+    TTSDictionary ttsDictionary;
     public void speak(int number) {
      {
             if (isInitialized) {
@@ -245,7 +250,9 @@ public class TTSController {
                     // speakingnumber=number;
                     //number++;
                     try {
-                        tts.speak(stringList.get(number), TextToSpeech.QUEUE_FLUSH, null, "TAG");//speak();
+                        String rawText=stringList.get(number);
+                        String convertedText=ttsDictionary.convert(rawText);
+                        tts.speak(convertedText, TextToSpeech.QUEUE_FLUSH, null, "TAG");//speak();
                         playerViewModel.getPlayingstate().postValue(true);
                     } catch (Exception e) {
                         Log.d("ERROR","init(js,number)");

@@ -66,7 +66,7 @@ public class LanguageFragment extends Fragment {
 
             @Override
             public void changePitch(String language) {
-                TTSController ttsController=new TTSController();
+                TTSController ttsController=TTSController.getInstance();
                 ttsController.Change_Language(language);
             }
         };

@@ -76,7 +76,7 @@ class MenuFragment : Fragment() {
             val layout = requireActivity().findViewById<LinearLayout>(R.id.Layout)
             val playBtn =
                 popupView.findViewById<Button>(R.id.play_button)
-          val ttsController=  TTSController()
+          val ttsController=  TTSController.getInstance()
             if (ttsController.isSpeaking) {
                 playBtn.foreground = requireActivity().getDrawable(R.drawable.stop)
             } else {

@@ -413,7 +413,7 @@ public class FileController {
             //TTSController ttsController=new TTSController(context);
             //TTSService.Companion.setup(ls);
             //TTSController tts=TTSController();
-            tts_Item item = new tts_Item(ls, sc.getLanguage(), startindex);
+            tts_Item item = new tts_Item(ls, sc.getLanguage(), startindex,url);
             return item;
         }
         catch (Exception e){

@@ -71,7 +71,7 @@ public class PlayerFragment extends Fragment {
         //int max=MainActivity.ttsController.getMaxnumber();
         //remaining.setText(Integer.toString(max));
         TextView str=view.findViewById(R.id.novelText);
-        TTSController ttsController=new TTSController();
+        TTSController ttsController=TTSController.getInstance();
         str.setText(ttsController.getCurrentstring());
        // str.setText(MainActivity.ttsController.getCurrentstring());
       //  totalTime=MainActivity.audioController.getDuration();
