@@ -542,10 +542,32 @@ class DictionaryDB(applicationContext: Context):BaseDB(applicationContext){
     init {
         dbName = "DictionaryDB.db"
         tableName="Dictionary";
-        initsql="create table if not exists $tableName(raw TEXT,convert TEXT,parent_path TEXT PRIMARY KEY)";
+        initsql="create table if not exists $tableName(raw TEXT,convert TEXT,parent_path TEXT KEY)";
         upgradesql=""
     }
+    public fun getAllBypath(parent_path: String):List<DictionaryPairModel>{
+        val dbHelper = loadHelper();
+        val database = dbHelper.readableDatabase
+        var res= mutableListOf<DictionaryPairModel>()
+        val cursor:Cursor =database.rawQuery("SELECT * FROM $tableName WHERE parent_path=?",
+            arrayOf(parent_path));
+        try {
+            while(cursor.moveToNext()) {
+                val key=cursor.getString(cursor.getColumnIndex("raw"))
+                val value=cursor.getString(cursor.getColumnIndex("convert"))
 
+                /* File(
+                     cursor.getString(cursor.getColumnIndex("parent_path")),
+                     cursor.getString(cursor.getColumnIndex("path"))
+                 )*/
+
+            }
+        } finally {
+            cursor.close()
+            database.close()
+        }
+        return res
+    }
     public fun getDictionary(parent_path: String):HashMap<String,String>{
         val dbHelper = loadHelper();
         val database = dbHelper.readableDatabase
@@ -587,6 +609,7 @@ class DictionaryDB(applicationContext: Context):BaseDB(applicationContext){
         }
         return res
     }
+
 }
 class DBProvider(applicationContext:Context){
      val applicationContext:Context=applicationContext;

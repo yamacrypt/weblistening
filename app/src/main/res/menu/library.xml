@@ -11,7 +11,7 @@
         app:showAsAction="always|withText"></item>
     <item
         android:id="@+id/library_dictionary"
-        android:icon="@drawable/reload"
+        android:icon="@drawable/ic_launcher"
         android:title="辞書"
         android:visible="true"
         app:showAsAction="always|withText"></item>

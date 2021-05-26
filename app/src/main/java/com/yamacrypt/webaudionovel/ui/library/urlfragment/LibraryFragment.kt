@@ -170,7 +170,7 @@ class LibraryFragment : Fragment(){
         val check=URL!="root"&& mToolbar.toolbar_progress_bar?.isVisible==false
         val dictionaryItem=menu.findItem(R.id.library_dictionary)
         dictionaryItem.setOnMenuItemClickListener {
-            val dialogFragment = DictionaryDialog()
+            val dialogFragment = DictionaryDialog(URL)
             dialogFragment.show(childFragmentManager, "my_dialog");
             /*AlertDialog.Builder(requireContext())
                 .setView(R.layout.dictionary_dialog)

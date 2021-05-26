@@ -159,6 +159,7 @@ public class TTSController {
         });
 
     }*/
+
    TTSDictionaryBuilder ttsDictionaryBuilder;
      TTSController(Context context){
         this.context=context;
@@ -173,6 +174,11 @@ public class TTSController {
             }
         });*/
 
+    }
+    public void updateDictionary(){
+         synchronized (ttsController) {
+            updateDictionary.run();
+         }
     }
 
     //int number;
@@ -226,12 +232,16 @@ public class TTSController {
     public void setup(tts_Item item){
         Init(item.getLanguage(),item.getStart_index());
         playerViewModel.getSpeakingnumber().postValue(item.getStart_index());
-        ttsDictionary=ttsDictionaryBuilder.build((item.getUrl()));
+        updateDictionary=()-> {
+            ttsDictionary = ttsDictionaryBuilder.build((item.getUrl()));
+        };
+        updateDictionary.run();
         // number =playerViewModel.getSpeakingnumber().getValue();
         this.stringList=item.getTexts();
         //this.maxnumber=stringList.size()-2;
         playerViewModel.getMaxnumber().postValue(stringList.size()-1);
     }
+    Runnable updateDictionary;
     TTSDictionary ttsDictionary;
     public void speak(int number) {
      {
@@ -251,7 +261,10 @@ public class TTSController {
                     //number++;
                     try {
                         String rawText=stringList.get(number);
-                        String convertedText=ttsDictionary.convert(rawText);
+                        String convertedText="";
+                        synchronized (ttsController) {
+                            convertedText = ttsDictionary.convert(rawText);
+                        }
                         tts.speak(convertedText, TextToSpeech.QUEUE_FLUSH, null, "TAG");//speak();
                         playerViewModel.getPlayingstate().postValue(true);
                     } catch (Exception e) {

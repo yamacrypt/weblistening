@@ -22,4 +22,16 @@ class TTSDictionaryTest : TestCase(){
 
         })*/
     }
+    @Test
+    fun test2(){
+        val dic1= hashMapOf<Char,List<Node<Char>>>()
+        dic1['五']= listOf(Node<Char>('五',Node<Char>('芒')))
+        val dic2= hashMapOf<Char,List<Node<Char>>>()
+        dic2['五']= listOf(Node<Char>('1',Node<Char>('芒')))
+        dic1+=dic2
+        println(dic1)
+        val dic22= hashMapOf<String,String>()
+        dic22["五芒"]= "ごぼうせい"
+        val dictionry=TTSDictionary(dic22)
+    }
 }

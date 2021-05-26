@@ -8,6 +8,7 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.util.Log
+import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import com.yamacrypt.webaudionovel.Database.DBProvider
 import com.yamacrypt.webaudionovel.Database.DBTableName
@@ -15,14 +16,15 @@ import com.yamacrypt.webaudionovel.Database.DictionaryDB
 import com.yamacrypt.webaudionovel.Database.DictionaryPairModel
 import com.yamacrypt.webaudionovel.R
 import com.yamacrypt.webaudionovel.TTSController
+import com.yamacrypt.webaudionovel.tts.DictionaryListDialog
 import kotlinx.android.synthetic.main.dictionary_dialog.*
 import kotlinx.android.synthetic.main.dictionary_dialog.view.*
 import kotlinx.android.synthetic.main.menu.*
 import java.util.*
 
 
-class DictionaryDialog  : DialogFragment(){
-
+class DictionaryDialog(url:String)  : DialogFragment(){
+     val url=url
      override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
          val layout=layoutInflater.inflate(R.layout.dictionary_dialog,container,false)
          val ttsController = TTSController.getInstance()
@@ -35,17 +37,18 @@ class DictionaryDialog  : DialogFragment(){
              speak(layout.dictionary_read.text.toString())
          }
          val builder = AlertDialog.Builder(activity)
-         builder.setTitle("タイトル")
-             .setView(layout)
+         builder.setView(layout)
             .setTitle("読み登録")
-
             .setNeutralButton("読み一覧", DialogInterface.OnClickListener{ dialog, which ->
+                val dialogListFragment = DictionaryListDialog(url)
+                dialogListFragment.show(childFragmentManager, "dictionaryList_dialog");
             })
             .setPositiveButton("登録する",DialogInterface.OnClickListener{dialog, which ->
-               val database= DBProvider.of(DBTableName.dictionary,requireContext()) as DictionaryDB
+                val database= DBProvider.of(DBTableName.dictionary,requireContext()) as DictionaryDB
                 val target=layout.dictionary_target.text.toString()
                 val read=layout.dictionary_read.text.toString()
-                database.insertData(DictionaryPairModel(target,read))
+                database.insertData(DictionaryPairModel(target,read,url))
+                ttsController.updateDictionary();
             })
          return builder.create()
     }

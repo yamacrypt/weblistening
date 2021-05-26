@@ -65,13 +65,15 @@ class StoryIndexModel(path:String, parent_path:String, index:Int, url:String, no
     }
 
 }
-class DictionaryPairModel(target:String,read:String): DBModel() {
+class DictionaryPairModel(target:String,read:String,url:String): DBModel() {
     val target=target
     val read=read
+    val url=url
     override fun toContentValues(): ContentValues {
         var values=ContentValues();
         values.put("raw",target)
         values.put("convert",read)
+        values.put("parent_path",url)
         return values
     }
 

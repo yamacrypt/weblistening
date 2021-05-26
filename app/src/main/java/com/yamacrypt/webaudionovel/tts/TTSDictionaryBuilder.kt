@@ -7,23 +7,19 @@ import com.yamacrypt.webaudionovel.Database.DictionaryDB
 import com.yamacrypt.webaudionovel.Database.StoryIndexDB
 
 class TTSDictionaryBuilder(context: Context) {
-    lateinit var baseHashmap:HashMap<String,String>
     val context=context
-    init {
-        val database=DBProvider.of(DBTableName.dictionary,context) as DictionaryDB
-        baseHashmap=database.getDictionary("generic")
-    }
     fun build(path:String): TTSDictionary {
         val database=DBProvider.of(DBTableName.dictionary,context) as DictionaryDB
-        val storydatabase=DBProvider.of(DBTableName.storyindex,context) as StoryIndexDB
-        var parentpath=path
+        val baseHashmap=database.getDictionary("root")
+
         if(path!="root") {
-            parentpath = storydatabase.getPARENTURL(path)
+            val storydatabase=DBProvider.of(DBTableName.storyindex,context) as StoryIndexDB
+            val parentpath = storydatabase.getPARENTURL(path)
+            println(parentpath)
+            val additionalHashmap=database.getDictionary(parentpath)
+            baseHashmap+=additionalHashmap
         }
-        println(parentpath)
-        val additionalHashmap=database.getDictionary(parentpath)
-        additionalHashmap+=baseHashmap
-        val baseDictionary=TTSDictionary(baseHashmap)
-        return baseDictionary
+        return TTSDictionary(baseHashmap)
+
     }
 }
