@@ -177,7 +177,7 @@ public class TTSController {
     }
     public void updateDictionary(){
          synchronized (ttsController) {
-            updateDictionary.run();
+             if(updateDictionary!=null)updateDictionary.run();
          }
     }
 

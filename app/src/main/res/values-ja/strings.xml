@@ -9,7 +9,7 @@
     <string name="title_notifications">設定</string>
     <string name="author">作者について</string>
     <string name="otherapps">開発者の他のアプリ</string>
-    <string name="yomi">読み登録</string>
+    <string name="register_yomi">読み登録</string>
     <string name="donwload">ダウンロード</string>
     <string name="download_start">ダウンロード開始</string>
     <string name="explain_main">検索画面から読みたい小説をダウンロードしよう！</string>
@@ -17,4 +17,5 @@
     <string name="review_text" >レビュー</string>
     <string name="isTitleSpeaking" translatable="false">タイトルの読み上げ</string>
     <string name="buttonMode">動作の変更</string>
+    <string name="deleteText">削除</string>
 </resources>

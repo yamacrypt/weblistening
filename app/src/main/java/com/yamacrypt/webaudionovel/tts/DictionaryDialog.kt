@@ -8,7 +8,6 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.util.Log
-import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import com.yamacrypt.webaudionovel.Database.DBProvider
 import com.yamacrypt.webaudionovel.Database.DBTableName
@@ -38,10 +37,10 @@ class DictionaryDialog(url:String)  : DialogFragment(){
          }
          val builder = AlertDialog.Builder(activity)
          builder.setView(layout)
-            .setTitle("読み登録")
+            .setTitle(R.string.register_yomi)
             .setNeutralButton("読み一覧", DialogInterface.OnClickListener{ dialog, which ->
                 val dialogListFragment = DictionaryListDialog(url)
-                dialogListFragment.show(childFragmentManager, "dictionaryList_dialog");
+                dialogListFragment.show(parentFragmentManager, "dictionaryList_dialog");
             })
             .setPositiveButton("登録する",DialogInterface.OnClickListener{dialog, which ->
                 val database= DBProvider.of(DBTableName.dictionary,requireContext()) as DictionaryDB

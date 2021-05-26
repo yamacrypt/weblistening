@@ -755,12 +755,12 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
     }
 
     fun playBtnClick(v: View) {
-        val state = mediaController.playbackState?.state
+        val state = mediaController?.playbackState?.state
         if (state == PlaybackStateCompat.STATE_PLAYING) {
             mediaController.transportControls.pause()
            // mediaController.transportControls.
             //  playBtn?.foreground = this.getDrawable(R.drawable.stop)
-        } else {
+        } else if(state==PlaybackStateCompat.STATE_PAUSED) {
             mediaController.transportControls.play()
             // playBtn?.foreground = this.getDrawable(R.drawable.play)
         }

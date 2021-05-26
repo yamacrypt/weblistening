@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="1dp"
     android:background="@color/design_default_color_background"
     android:foreground="?selectableItemBackground"
     android:padding="16dp">
@@ -22,9 +21,37 @@
         android:id="@+id/readText"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="15dp"
         android:text="TextView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/targetText"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/genericText"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="10dp"
+        android:text="(汎用)"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/readText"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Space
+        android:layout_width="20dp"
+        android:layout_height="1dp"
+        app:layout_constraintBottom_toTopOf="@+id/delete_dictionary_item"
+        app:layout_constraintEnd_toStartOf="@+id/delete_dictionary_item"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/genericText"
+        app:layout_constraintTop_toBottomOf="@+id/readText" />
+
+    <Button
+        android:id="@+id/delete_dictionary_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/deleteText"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

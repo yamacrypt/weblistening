@@ -555,11 +555,8 @@ class DictionaryDB(applicationContext: Context):BaseDB(applicationContext){
             while(cursor.moveToNext()) {
                 val key=cursor.getString(cursor.getColumnIndex("raw"))
                 val value=cursor.getString(cursor.getColumnIndex("convert"))
-
-                /* File(
-                     cursor.getString(cursor.getColumnIndex("parent_path")),
-                     cursor.getString(cursor.getColumnIndex("path"))
-                 )*/
+                val item=DictionaryPairModel(key,value,parent_path)
+                res.add(item)
 
             }
         } finally {
@@ -567,6 +564,24 @@ class DictionaryDB(applicationContext: Context):BaseDB(applicationContext){
             database.close()
         }
         return res
+    }
+    fun delete(item:DictionaryPairModel){
+        val where_raw=item.target
+        val where_convert=item.read
+        val where_path=item.url
+        val dbHelper =loadHelper();
+        val database = dbHelper.writableDatabase
+
+        try {
+
+            val whereClauses = "raw = ? AND convert = ? AND parent_path = ?"
+            val whereArgs = arrayOf(where_raw,where_convert,where_path )
+            database.delete(tableName, whereClauses, whereArgs)
+            database.close()
+        }catch(exception: Exception) {
+            Log.e("deleteData", exception.toString())
+        }
+
     }
     public fun getDictionary(parent_path: String):HashMap<String,String>{
         val dbHelper = loadHelper();
