@@ -31,12 +31,10 @@ public class SpeedAdapter extends RecyclerView.Adapter<SpeedAdapter.SpeedViewHol
     public static class SpeedViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
         public View item;
-        public TextView textView;
 
         public SpeedViewHolder(View v) {
             super(v);
             item = v;
-            textView=v.findViewById(R.id.dl_text);
         }
     }
     @Override

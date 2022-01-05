@@ -6,7 +6,6 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.media.MediaMetadataCompat;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,10 +14,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,16 +28,12 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.yamacrypt.webaudionovel.DataStore;
-import com.yamacrypt.webaudionovel.MainActivity;
 import com.yamacrypt.webaudionovel.MusicService.MusicLibrary;
 import com.yamacrypt.webaudionovel.PlayList;
 import com.yamacrypt.webaudionovel.R;
 import com.yamacrypt.webaudionovel.TTSController;
-import com.yamacrypt.webaudionovel.TTSService;
 import com.yamacrypt.webaudionovel.ui.library.models.BookMark;
 import com.yamacrypt.webaudionovel.ui.library.models.BookMarkKt;
-
-import org.w3c.dom.Text;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -67,24 +63,65 @@ public class PlayerFragment extends Fragment {
         elapse=view.findViewById(R.id.elapsedTimeLabel);
         //TextView title=view.findViewById(R.id.player_title);
         //int elapsetime=MainActivity.audioController.getNowTime();
+        FrameLayout speedLayout =view.findViewById(R.id.player_speed_layout);
+        TextView speedText=view.findViewById(R.id.player_speed_layout);
+        SharedPreferences prefs= DataStore.getSharedPreferences(getContext());
+        String s=DataStore.getSpeed_text(prefs.getInt(DataStore.speedKey,10));
+        speedText.setText(s);
+        speedLayout.setOnClickListener(new View.OnClickListener() {
+                                  @Override
+                                  public void onClick(View v) {
+                                      NavController navController = Navigation.findNavController(getActivity(), R.id.nav_menu_fragment);
+                                      navController.navigate(R.id.action_navigation_player_to_navigation_speed);
+                                  }
+                              }
+        );
 
-        //int max=MainActivity.ttsController.getMaxnumber();
-        //remaining.setText(Integer.toString(max));
+        FrameLayout bookMarkLayout =view.findViewById(R.id.book_mark_layout);
+        ImageView bookMarkImage=view.findViewById(R.id.bookMarkButton);
+        bookMarkLayout.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        bookMarkLayout.setEnabled(false);
+                                        BookMarkKt.manualSave(getContext());//saveBookMark();
+                                        bookMarkImage.setForeground(getResources().getDrawable(R.drawable.checkicon));
+                                        Timer timer=new Timer();
+                                        Handler handler=new Handler();
+                                        TimerTask timerTask=new TimerTask() {
+                                            @Override
+                                            public void run() {
+                                                try {
+                                                    handler.post(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        bookMarkImage.setForeground(getResources().getDrawable(R.drawable.bookmark));
+                                                        timer.cancel();
+                                                        bookMarkLayout.setEnabled(true);
+                                                        }
+                                                    });
+                                                    }
+                                                catch (Exception e){}
+                                            }
+                                        };
+                                        timer.schedule(timerTask,500);;
+                                    }
+            }
+        );
+
+        FrameLayout sleepTimerLayout =view.findViewById(R.id.sleep_timer_layout);
+        sleepTimerLayout.setOnClickListener(new View.OnClickListener() {
+                                           @Override
+                                           public void onClick(View v) {
+                                               NavController navController = Navigation.findNavController(getActivity(), R.id.nav_menu_fragment);
+                                               navController.navigate(R.id.action_navigation_player_to_navigation_sleep_timer);
+                                           }
+                                       }
+        );
+
         TextView str=view.findViewById(R.id.novelText);
         TTSController ttsController=TTSController.getInstance();
         str.setText(ttsController.getCurrentstring());
-       // str.setText(MainActivity.ttsController.getCurrentstring());
-      //  totalTime=MainActivity.audioController.getDuration();
-       // int remaingtime=totalTime-elapsetime;
-       /* elapsetime/=1000;
-        remaingtime/=1000;
-        int emin=elapsetime/60;
-        int esec=elapsetime%60;
-        int rmin=remaingtime/60;
-        int rsec=remaingtime%60;
-        elapse.setText(ItoS(emin)+":"+ItoS(esec));
-        remaining.setText(ItoS(rmin)+":"+ItoS(rsec));*/
-       Button playBtn=view.findViewById(R.id.playBtn);
+        Button playBtn=view.findViewById(R.id.playBtn);
 
         if (ttsController.isSpeaking()) {
             playBtn.setForeground(getActivity().getDrawable(R.drawable.stop));
@@ -92,27 +129,15 @@ public class PlayerFragment extends Fragment {
             playBtn.setForeground(getActivity().getDrawable(R.drawable.playicon));
         }
         positionBar=view.findViewById(R.id.positionBar);
-        //positionBar.setMax(MainActivity.ttsController.getMaxnumber());
         positionBar.setOnSeekBarChangeListener(
                 new SeekBar.OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         if (fromUser) {
-                            //MainActivity.audioController.seekTo(progress);
-
-                           //positionBar.setProgress(progress);
-                            //TTSService.ttsController.stop();
                             ttsController.speak(progress);
                             model.getSpeakingnumber().setValue(progress);
 
                         }
-                        //saveBookMark();
-                        /* int num=model.getSpeakingnumber().getValue();
-                        elapse.setText(Integer.toString(num));
-                        //MainActivity.ttsController.stop();
-                        //model.getSpeakingnumber().setValue(progress);
-                        str.setText(MainActivity.ttsController.getCurrentstring());*/
-                       // MainActivity.ttsController.start();
 
                     }
 
@@ -127,7 +152,7 @@ public class PlayerFragment extends Fragment {
                     }
                 }
         );
-        SeekBar volumeBar = (SeekBar) view.findViewById(R.id.volumeBar);
+        /*SeekBar volumeBar = (SeekBar) view.findViewById(R.id.volumeBar);
         AudioManager mAudioManager = (AudioManager)getActivity().getSystemService(Context.AUDIO_SERVICE);
 
         volumeBar.setMax(mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
@@ -152,7 +177,7 @@ public class PlayerFragment extends Fragment {
 
                     }
                 }
-        );
+        );*/
         final Observer<Integer> numberObserver =new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {
@@ -173,8 +198,6 @@ public class PlayerFragment extends Fragment {
                 remaining.setText(Integer.toString(max));
                 positionBar.setMax(max);;
                 mToolbar.setTitle(DataStore.intro);
-                //  TextView str=view.findViewById(R.id.novelText);
-                //title.setText(PlayerViewModel.PlayData);
             }
         };
         model.getSpeakingnumber().observe(getViewLifecycleOwner(),numberObserver);
@@ -184,8 +207,6 @@ public class PlayerFragment extends Fragment {
             @Override
             public void onClick(View view) {
                getActivity().onBackPressed();
-            //    ~Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-             //           .setAction("Action", null).show();
             }
         });
     }
@@ -193,12 +214,12 @@ public class PlayerFragment extends Fragment {
     public void onResume() {
         super.onResume();
         androidx.appcompat.widget.Toolbar mToolbar=getActivity().findViewById(R.id.tool_bar);
-      //  ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
         try {
             mToolbar.setTitle(MusicLibrary.INSTANCE.getMetadata(requireContext()).getText(MediaMetadataCompat.METADATA_KEY_ARTIST));
         }
         catch (Exception e){}
     }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -209,8 +230,6 @@ public class PlayerFragment extends Fragment {
             public boolean onMenuItemClick(MenuItem item) {
                 menuitem.setEnabled(false);
                 BookMarkKt.manualSave(getContext());//saveBookMark();
-              //  BookMark bookmark=new BookMark(PlayList.getPlayingPath(),model.getSpeakingnumber().getValue(),PlayList.getRootpath(),PlayList.getCurrent_number());
-              // BookMarkKt.BookMark_Save(bookmark,getContext()); //BookMark_Save()
                 menuitem.setIcon(R.drawable.checkicon);
 
                 Timer timer=new Timer();
@@ -236,94 +255,30 @@ public class PlayerFragment extends Fragment {
                 return false;
             }
         });
-        /*for (int i = 0; i < menu.size(); i++) {
-            menu.getItem(i).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        }*/
-        //  dictionary=menu.findItem(R.id.menu_dictionary);
-
     }
     void saveBookMark(){
         BookMark bookmark=new BookMark(PlayList.getPlayingPath(),model.getSpeakingnumber().getValue(),PlayList.getRootpath(),PlayList.getCurrent_number());
         BookMarkKt.BookMark_Save(bookmark,getContext()); //BookMark_Save()
     }
 
-    /*TimerTask timercallback(){
-        Handler handler=new Handler();
-        Runnable runnable=new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        };
-        handler.post(runnable);
-    }*/
-   /* @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        //NavController controller= Navigation.findNavController(requireActivity(), R.id.nav_menu_fragment);
-        try {
-            switch(item.getItemId()) {
-                case R.id.menu_dictionary:
-                   // TutorialPopup();
-                  //  MainActivity.
-                    break;
-                case R.id.menu_language:
-                    break;
-            }
-        } catch(Exception e) {
-        }
-        return true;
-    }*/
 
     private void TutorialPopup() {
         PopupWindow turoial_popup = new PopupWindow();
         // レイアウト設定
         View popupView = getLayoutInflater().inflate(R.layout.dictionary, null);
         View tar=root.findViewById(R.id.playBtn);
-        /*popupView.findViewById(R.id.close_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mPopupWindow.isShowing()) {
-                    mPopupWindow.dismiss();
-                }
-                ReturnHome();
-
-            }
-        });*/
-      /*  popupView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                turoial_popup.dismiss();
-                ac.click_effect();
-            }
-        });*/
-
         turoial_popup.setContentView(popupView);
         // 背景設定
-        //mPopupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_launcher_background));
        turoial_popup.setBackgroundDrawable(getResources().getDrawable(R.color.colorGrey));
         // タップ時に他のViewでキャッチされないための設定
         turoial_popup.setTouchable(true);
         turoial_popup.setFocusable(false);
          turoial_popup.setOutsideTouchable(false);
 
-        // 表示サイズの設定 今回は幅300dp
-        //float width = penview.getWidth()*2;
-        //float width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics());
-        //turoial_popup.setWindowLayoutMode((int) width, WindowManager.LayoutParams.WRAP_CONTENT);
         turoial_popup.setWidth(root.getWidth()*3/4);
         turoial_popup.setHeight(root.getHeight()*3/4);
 
 
-        // 画面中 if(f instanceof CustomFragmentClass) 央に表示
-        //turoial_popup.showAsDropDown(root, Gravity.CENTER, 0, 0);
         turoial_popup.showAtLocation(root, Gravity.CENTER, 0, 0);
-        //TextView view = popupView.findViewById(R.id.tutorial_view);
-        //view.setText(text);
-       /* TextView scoreview=popupView.findViewById(R.id.score_view);
-        scoreview.setText(String.format("あなたのスコアは%d点です",model.getScore().getValue()));
-        SharedPreferences prefs = getContext().getSharedPreferences(prefsname, MODE_PRIVATE);
-        int maxScore = prefs.getInt(keyword, 0);
-        TextView maxscore=popupView.findViewById(R.id.maxscore_view);
-        maxscore.setText(String.format("ハイスコア %d点",maxScore));*/
     }
 }

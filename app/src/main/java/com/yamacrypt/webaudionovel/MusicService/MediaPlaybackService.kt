@@ -10,7 +10,6 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.annotation.RequiresApi
-import androidx.appcompat.widget.Toolbar
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.media.AudioAttributesCompat
@@ -18,17 +17,11 @@ import androidx.media.AudioFocusRequestCompat
 import androidx.media.AudioManagerCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.session.MediaButtonReceiver
-import com.yamacrypt.webaudionovel.DataStore
+import com.yamacrypt.webaudionovel.*
 import com.yamacrypt.webaudionovel.Database.DBProvider
 import com.yamacrypt.webaudionovel.Database.DBTableName
 import com.yamacrypt.webaudionovel.Database.StoryIndexDB
-import com.yamacrypt.webaudionovel.PlayList
-import com.yamacrypt.webaudionovel.R
-import com.yamacrypt.webaudionovel.TTSController
 import com.yamacrypt.webaudionovel.ui.library.fileservice.FileChangeBroadcastReceiver
-import com.yamacrypt.webaudionovel.ui.library.models.BookMark
-import com.yamacrypt.webaudionovel.ui.library.models.BookMark_Open
-import com.yamacrypt.webaudionovel.ui.library.models.BookMark_Save
 import java.lang.Exception
 import kotlin.concurrent.thread
 import androidx.media.app.NotificationCompat as MediaNotificationCompat
@@ -111,6 +104,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     }
     //private val mediaPlayer = MediaPlayer()
    lateinit var ttscontroller:TTSController//=TTSController();//=TTSController(applicationContext)
+
     private val callback = object : MediaSessionCompat.Callback() {
         override fun onSetPlaybackSpeed(speed: Float) {
             if(speed>=1000){

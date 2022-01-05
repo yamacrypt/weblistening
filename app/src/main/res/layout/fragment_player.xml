@@ -58,20 +58,35 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50sp"
+        android:layout_height="80sp"
         android:layout_marginTop="20sp"
         android:orientation="horizontal">
 
         <Space
             android:layout_width="0sp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.35" />
+            android:layout_weight="0.05" />
+
+
+        <Button
+            android:id="@+id/resetBtn"
+            android:layout_width="45sp"
+            android:layout_height="45sp"
+            android:background="@drawable/button_state2"
+            android:foreground="@drawable/reset"
+            android:onClick="resetBtnClick"
+            android:stateListAnimator="@null" />
+
+        <Space
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.05" />
 
 
         <Button
             android:id="@+id/back1Btn"
-            android:layout_width="30sp"
-            android:layout_height="30sp"
+            android:layout_width="45sp"
+            android:layout_height="45sp"
             android:background="@drawable/button_state2"
             android:foreground="@drawable/back1"
             android:onClick="back1BtnClick"
@@ -82,24 +97,10 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.05" />
 
-
-        <Button
-            android:id="@+id/resetBtn"
-            android:layout_width="30sp"
-            android:layout_height="30sp"
-            android:background="@drawable/button_state2"
-            android:foreground="@drawable/reset"
-            android:onClick="resetBtnClick"
-            android:stateListAnimator="@null" />
-        <Space
-            android:layout_width="0sp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.05" />
-
         <Button
             android:id="@+id/playBtn"
-            android:layout_width="50sp"
-            android:layout_height="50sp"
+            android:layout_width="80sp"
+            android:layout_height="80sp"
             android:background="@drawable/button_state2"
             android:foreground="@drawable/playicon"
             android:onClick="playBtnClick"
@@ -111,12 +112,12 @@
             android:layout_weight="0.05" />
 
         <Button
-            android:id="@+id/endBtn"
-            android:layout_width="30sp"
-            android:layout_height="30sp"
+            android:id="@+id/next1Btn"
+            android:layout_width="45sp"
+            android:layout_height="45sp"
             android:background="@drawable/button_state2"
-            android:foreground="@drawable/end"
-            android:onClick="endBtnClick"
+            android:foreground="@drawable/next1"
+            android:onClick="next1BtnClick"
             android:stateListAnimator="@null" />
 
         <Space
@@ -126,42 +127,107 @@
 
 
         <Button
-            android:id="@+id/next1Btn"
-            android:layout_width="30sp"
-            android:layout_height="30sp"
+            android:id="@+id/endBtn"
+            android:layout_width="45sp"
+            android:layout_height="45sp"
             android:background="@drawable/button_state2"
-            android:foreground="@drawable/next1"
-            android:onClick="next1BtnClick"
+            android:foreground="@drawable/end"
+            android:onClick="endBtnClick"
             android:stateListAnimator="@null" />
-
-        <Space
-            android:layout_width="0sp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.35" />
 
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40sp"
-        android:gravity="center"
+        android:layout_height="80sp"
+        android:layout_marginTop="0sp"
         android:orientation="horizontal">
-        <ImageView
-            android:layout_width="18sp"
-            android:layout_height="18sp"
-            android:src="@drawable/sound" />
 
-        <SeekBar
-            android:id="@+id/volumeBar"
-            android:layout_width="300sp"
-            android:layout_height="wrap_content"
-            android:max="100"
-            android:progress="50" />
 
-        <ImageView
-            android:layout_width="26sp"
-            android:layout_height="26sp"
-            android:src="@drawable/sound2" />
+        <FrameLayout
+            android:id="@+id/player_speed_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.33">
+
+            <TextView
+                android:id="@+id/speed_text"
+                android:layout_width="45sp"
+                android:layout_height="45sp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="1.0x"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:text="再生速度" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/sleep_timer_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.33">
+
+            <TextView
+                android:id="@+id/countDownTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="30:00"
+                android:textSize="24sp"
+                android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/sleepTimer"
+                android:layout_width="80sp"
+                android:layout_height="80sp"
+                android:layout_gravity="center"
+                android:background="@drawable/button_state2"
+                android:foreground="@drawable/ic_launcher_adaptive_fore"
+                android:stateListAnimator="@null" />
+
+            <TextView
+                android:id="@+id/sleepTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:text="スリープ" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/book_mark_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.33">
+
+            <Button
+                android:id="@+id/bookMarkButton"
+                android:layout_width="45sp"
+                android:layout_height="45sp"
+                android:layout_gravity="center"
+                android:foreground="@drawable/bookmark"
+                android:stateListAnimator="@null"
+                android:title="ブックマーク"
+                android:tooltipText="ブックマーク" />
+
+            <TextView
+                android:id="@+id/bookMarkTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:text="ブックマーク" />
+
+        </FrameLayout>
+
+
     </LinearLayout>
 
 </LinearLayout>

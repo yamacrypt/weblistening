@@ -8,6 +8,7 @@
     <string name="change_language">Speaking Language</string>
     <string name="title_notifications">Setting</string>
     <string name="author">Developer</string>
+    <string name="sleep_timer">Sleep</string>
     <string name="otherapps">OtherApps</string>
     <string name="review_text" >Review</string>
     <string name="interstitial_ad_unit_id" translatable="false">ca-app-pub-8447999230890893/8960958088</string>

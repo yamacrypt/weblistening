@@ -764,16 +764,6 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
             mediaController.transportControls.play()
             // playBtn?.foreground = this.getDrawable(R.drawable.play)
         }
-      // val ttsController=TTSService.ttsController
-       // MediaControllerCompat.getMediaController(this).transportControls.
-       // MediaControllerCompat.getMediaController(this).transportControls.pause()
-       /* if (ttsController.isSpeaking) {
-           ttsController.stop()
-           // v.foreground = getDrawable(R.drawable.playicon)
-        } else {
-            ttsController. speak_continue()
-           // v.foreground = getDrawable(R.drawable.stop)
-        }*/
     }
     fun backBtnClick(v: View?) {
 
@@ -794,11 +784,8 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
     }
     fun endBtnClick(v: View?){
 
- //           mediaController.transportControls.skipToNext()
         mediaController.transportControls.fastForward()
-      //  val ttsController=TTSService.ttsController
 
-       // ttsController.end()
     }
 
     /*SearchView mSearchView;

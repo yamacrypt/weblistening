@@ -44,12 +44,6 @@ public class SettingFragment extends Fragment {
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         layout=(LinearLayout)view.findViewById(R.id.speed__layout);
-       /* recyclerView = (RecyclerView) view.findViewById(R.id.speed_recycler_view);
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(layoutManager);*/
-        //Layout_SetEnabled(true);
-       // View_SetEnabled(true);
         bt= view.findViewById(R.id.speed_button);
         Button pitchbt=view.findViewById(R.id.pitch_button);
         Button languagebt=view.findViewById(R.id.language_button);
@@ -59,10 +53,9 @@ public class SettingFragment extends Fragment {
         String lan=prefs.getString(DataStore.languageKey,"ja");
         SharedPreferences pref= DataStore.getSharedPreferences(getContext());
         Switch isTitleSpeakingSwitch=view.findViewById(R.id.isTitleSpeakingSwitch);
-        //isTitleSpeakingButton.Listen
-       boolean isTitleSpeaking=pref.getBoolean("isTitleSpeaking",false);
+        boolean isTitleSpeaking=pref.getBoolean("isTitleSpeaking",false);
         isTitleSpeakingSwitch.setChecked(isTitleSpeaking);
-       isTitleSpeakingSwitch.setOnClickListener(
+        isTitleSpeakingSwitch.setOnClickListener(
                new View.OnClickListener() {
                    @Override
                    public void onClick(View v) {
@@ -71,7 +64,7 @@ public class SettingFragment extends Fragment {
                        editor.apply();
                    }
                }
-       );
+        );
         Switch buttonModeSwitch=view.findViewById(R.id.buttonModeSwitch);
         //isTitleSpeakingButton.Listen
         boolean buttonMode=pref.getBoolean("buttonMode",false);
@@ -92,22 +85,11 @@ public class SettingFragment extends Fragment {
         bt.setText(s);
         pitchbt.setText(pitchs);
         languagebt.setText(lan);
-       /* int len=16;
-        int[] sp_array=new int[len];
-        for (int i = 0; i < len; i++) {
-            sp_array[i]=5+i;
-        }
-
-        mAdapter = new SpeedAdapter(sp_array,getContext());
-        ((SpeedAdapter) mAdapter).setListener(createlistner());
-        recyclerView.setAdapter(mAdapter);*/
         bt.setOnClickListener(new View.OnClickListener() {
                                   @Override
                                   public void onClick(View v) {
                                       NavController navController = Navigation.findNavController(getActivity(), R.id.nav_menu_fragment);
                                       navController.navigate(R.id.action_navigation_notifications_to_navigation_speed);
-                                      //View_SetEnabled(false);
-                                      //recyclerView.setEnabled(true);
                                   }
                               }
         );
@@ -155,39 +137,7 @@ public class SettingFragment extends Fragment {
                     }
                 });
 
-               /* ReviewInfo reviewInfo=null;
-                ReviewManager manager = ReviewManagerFactory.create(getContext());
-                Task<ReviewInfo> request = manager.requestReviewFlow();
-                request.addOnCompleteListener(new OnCompleteListener<ReviewInfo>() {
-                    @Override
-                    public void onComplete(@NonNull Task<ReviewInfo> task) {
-
-                    }
-                });*/
             }
         });
     }
-
-   /* private void View_SetEnabled(boolean enabled){
-        if(enabled) {
-            recyclerView.setEnabled(false);
-            recyclerView.setVisibility(View.INVISIBLE);
-        }
-        else{
-            recyclerView.setEnabled(true);
-            recyclerView.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private SpeedAdapter.Listener createlistner(){
-        return new SpeedAdapter.Listener() {
-            @Override
-            public void transition(int sp10) {
-               // Button bt=(Button)root.findViewById(R.id.speed_button);
-                SharedPreferences pref= DataStore.getSharedPreferences(getContext());
-               int sp= pref.getInt(DataStore.speedKey,10);
-                bt.setText(DataStore.getSpeed_text(sp10));
-            }
-        };
-    }*/
 }
