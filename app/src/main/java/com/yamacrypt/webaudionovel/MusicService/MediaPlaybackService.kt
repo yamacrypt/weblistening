@@ -21,9 +21,9 @@ import com.yamacrypt.webaudionovel.*
 import com.yamacrypt.webaudionovel.Database.DBProvider
 import com.yamacrypt.webaudionovel.Database.DBTableName
 import com.yamacrypt.webaudionovel.Database.StoryIndexDB
+import com.yamacrypt.webaudionovel.SleepTimer.SleepTimer
 import com.yamacrypt.webaudionovel.ui.library.fileservice.FileChangeBroadcastReceiver
 import java.lang.Exception
-import kotlin.concurrent.thread
 import androidx.media.app.NotificationCompat as MediaNotificationCompat
 
 
@@ -97,14 +97,10 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             }
         } catch (e: Exception) {
         }
-        // ttscontroller.setup(MusicLibrary.getTTS_Item(baseContext))
-        // MusicLibrary.setdata(File(path),0);
-        // TTSService.ttsController.setup(item);
-        //super.onSkipToNext()
-    }
-    //private val mediaPlayer = MediaPlayer()
-   lateinit var ttscontroller:TTSController//=TTSController();//=TTSController(applicationContext)
 
+    }
+    lateinit var ttscontroller:TTSController//=TTSController();//=TTSController(applicationContext)
+    lateinit var sleepTimer: SleepTimer;
     private val callback = object : MediaSessionCompat.Callback() {
         override fun onSetPlaybackSpeed(speed: Float) {
             if(speed>=1000){
@@ -137,12 +133,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             else{
                _onBack1()
            }
-           /* try {
-                ttscontroller.back()//reset()
-                mediaSession.controller.transportControls.prepare()
-                mediaSession.controller.transportControls.play()
-            } catch (e: Exception) {
-            }*/
         }
        // override fun on
         override fun onSkipToNext() {
@@ -153,16 +143,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             else{
                 _onNext1()
            }
-          /* try {
-               ttscontroller.next()
-               mediaSession.controller.transportControls.prepare()
-               mediaSession.controller.transportControls.play()
-           } catch (e: Exception) {
-           }*/
-           // ttscontroller.setup(MusicLibrary.getTTS_Item(baseContext))
-           // MusicLibrary.setdata(File(path),0);
-           // TTSService.ttsController.setup(item);
-            //super.onSkipToNext()
         }
         override fun onPrepare() {
 
@@ -251,7 +231,9 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
            // unregisterReceiver(audioNoisyReceiver)
 
         }
+
     }
+    lateinit var currentSleepTimer:SleepTimer;
     class NotificationConst{
         companion object{
             val CHANNEL_MUSIC="r";

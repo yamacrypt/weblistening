@@ -76,8 +76,14 @@ public class SpeedFragment extends Fragment {
                 editor.putInt(DataStore.speed_position,lastPosition);
                 editor.apply();
                 //bt.setText(DataStore.getSpeed_text(sp));
-                NavController navController = Navigation.findNavController(getActivity(), R.id.nav_menu_fragment);
-                navController.navigateUp();
+                try {
+                    NavController navController = Navigation.findNavController(getActivity(), R.id.nav_menu_fragment);
+                    navController.navigateUp();
+                }
+                catch (Exception e){
+                    NavController navController = Navigation.findNavController(getActivity(), R.id.nav_main_fragment);
+                    navController.navigateUp();
+                }
                // speedListener.onSelected(sp10);
             }
 

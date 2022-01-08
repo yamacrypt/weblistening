@@ -43,7 +43,12 @@ public class SleepTimerAdapter extends RecyclerView.Adapter<SleepTimerAdapter.Sl
         final int sleepTimer=arr[position];
         String sleep_text=String.valueOf(sleepTimer);
         Button bt=holder.item.findViewById(R.id.speed_button);
-        bt.setText(String.format("%s分",sleep_text));
+        if (sleepTimer < 0) {
+            bt.setText(context.getString(R.string.sleep_reset));
+        }
+        else {
+            bt.setText(String.format("%s分", sleep_text));
+        }
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

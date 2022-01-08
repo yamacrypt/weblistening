@@ -135,6 +135,11 @@
             android:onClick="endBtnClick"
             android:stateListAnimator="@null" />
 
+        <Space
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.05" />
+
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -168,6 +173,13 @@
         </FrameLayout>
 
         <FrameLayout
+            android:id="@+id/book_mark_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.33"
+            tools:visibility="invisible"/>
+
+        <FrameLayout
             android:id="@+id/sleep_timer_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -179,11 +191,11 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:text="30:00"
+                android:text="00:00"
                 android:textSize="24sp"
                 android:visibility="invisible" />
 
-            <Button
+            <ImageView
                 android:id="@+id/sleepTimer"
                 android:layout_width="80sp"
                 android:layout_height="80sp"
@@ -199,32 +211,6 @@
                 android:layout_gravity="bottom|center"
                 android:gravity="center"
                 android:text="スリープ" />
-        </FrameLayout>
-
-        <FrameLayout
-            android:id="@+id/book_mark_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.33">
-
-            <Button
-                android:id="@+id/bookMarkButton"
-                android:layout_width="45sp"
-                android:layout_height="45sp"
-                android:layout_gravity="center"
-                android:foreground="@drawable/bookmark"
-                android:stateListAnimator="@null"
-                android:title="ブックマーク"
-                android:tooltipText="ブックマーク" />
-
-            <TextView
-                android:id="@+id/bookMarkTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|center"
-                android:gravity="center"
-                android:text="ブックマーク" />
-
         </FrameLayout>
 
 

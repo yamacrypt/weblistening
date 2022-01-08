@@ -31,6 +31,12 @@
         <action
             android:id="@+id/action_navigation_player_to_text"
             app:destination="@id/navigation_fullTextPlay" />
+        <action
+            android:id="@+id/action_navigation_play_to_navigation_speed"
+            app:destination="@id/navigation_speed" />
+        <action
+            android:id="@+id/action_navigation_play_to_navigation_sleep_timer"
+            app:destination="@id/navigation_sleep_timer" />
     </fragment>
     <fragment
         android:id="@+id/navigation_fullTextPlay"
@@ -52,4 +58,14 @@
         android:name="com.yamacrypt.webaudionovel.ui.setting.LanguageFragment"
         android:label="@string/change_language"
         tools:layout="@layout/fragment_language" />
+    <fragment
+        android:id="@+id/navigation_sleep_timer"
+        android:name="com.yamacrypt.webaudionovel.ui.SleepTimerFragment"
+        android:label="@string/sleep_timer"
+        tools:layout="@layout/fragment_sleep_timer" />
+    <fragment
+        android:id="@+id/navigation_speed"
+        android:name="com.yamacrypt.webaudionovel.ui.setting.SpeedFragment"
+        android:label="@string/change_speed"
+        tools:layout="@layout/fragment_speed" />
 </navigation>

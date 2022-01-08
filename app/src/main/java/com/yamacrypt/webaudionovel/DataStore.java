@@ -115,6 +115,7 @@ public class DataStore {
     public static File getFile(Context context,String filename){
         return getFile(context,"",filename);
     }
+    public static String sleepTime="sleepTIme";
    static public SharedPreferences getSharedPreferences(Context context){
         SharedPreferences prefs =context.getSharedPreferences("SaveData",0);
         return prefs;

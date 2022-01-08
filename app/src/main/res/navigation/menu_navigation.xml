@@ -63,11 +63,7 @@
         android:name="com.yamacrypt.webaudionovel.ui.setting.AuthorFragment"
         android:label="@string/author"
         tools:layout="@layout/fragment_author" />
-    <fragment
-        android:id="@+id/navigation_sleep_timer"
-        android:name="com.yamacrypt.webaudionovel.ui.SleepTimerFragment"
-        android:label="@string/sleep_timer"
-        tools:layout="@layout/fragment_sleep_timer" />
+
     <fragment
         android:id="@+id/navigation_player"
         android:name="com.yamacrypt.webaudionovel.ui.PlayerFragment"
@@ -76,12 +72,6 @@
         <argument
             android:name="dynamicTitle"
             app:argType="string"/>
-        <action
-            android:id="@+id/action_navigation_player_to_navigation_speed"
-            app:destination="@id/navigation_speed" />
-        <action
-            android:id="@+id/action_navigation_player_to_navigation_sleep_timer"
-            app:destination="@id/navigation_sleep_timer" />
     </fragment>
     <action
         android:id="@+id/go_player"

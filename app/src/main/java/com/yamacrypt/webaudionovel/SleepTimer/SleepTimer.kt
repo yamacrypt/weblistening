@@ -1,10 +1,11 @@
-package com.yamacrypt.webaudionovel
+package com.yamacrypt.webaudionovel.SleepTimer
 
 import android.app.Activity
 import android.os.CountDownTimer
 import android.support.v4.media.session.MediaControllerCompat
 import android.widget.Button
 import android.widget.TextView
+import com.yamacrypt.webaudionovel.R
 
 class SleepTimer(i: Long,activity: Activity) : CountDownTimer(i*1000,1000) {
     val sleepView: TextView = activity.findViewById(R.id.countDownTextView)

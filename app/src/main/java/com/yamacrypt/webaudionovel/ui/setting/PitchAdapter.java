@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.yamacrypt.webaudionovel.DataStore;
 import com.yamacrypt.webaudionovel.R;
-import com.yamacrypt.webaudionovel.TTSService;
 
 import java.text.DecimalFormat;
 

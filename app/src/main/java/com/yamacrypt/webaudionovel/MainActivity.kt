@@ -7,6 +7,7 @@ import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.net.Uri
@@ -48,10 +49,7 @@ import com.yamacrypt.webaudionovel.Database.StoryIndexDB
 import com.yamacrypt.webaudionovel.MusicService.MediaPlaybackService
 import com.yamacrypt.webaudionovel.MusicService.MusicLibrary
 import com.yamacrypt.webaudionovel.htmlParser.HTMLFactory
-import com.yamacrypt.webaudionovel.ui.MenuFragment
-import com.yamacrypt.webaudionovel.ui.MenuFragmentDirections
-import com.yamacrypt.webaudionovel.ui.PlayerViewModel
-import com.yamacrypt.webaudionovel.ui.ReviewDialogFragment
+import com.yamacrypt.webaudionovel.ui.*
 import com.yamacrypt.webaudionovel.ui.library.common.FileType
 import com.yamacrypt.webaudionovel.ui.library.fileservice.FileChangeBroadcastReceiver
 import com.yamacrypt.webaudionovel.ui.library.main.BackStackManager
@@ -262,8 +260,7 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
         if(!mediaBrowser.isConnected)
         mediaBrowser.connect()
         prepareItemOnStart()
-        //MediaControllerCompat.getMediaController(this)?.registerCallback(controllerCallback)
-        // MediaControllerCompat.getMediaController(requireActivity()).transportControls.play()
+
     }
 
     // お作法的なコード
@@ -272,6 +269,7 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
             super.onStop()
             MediaControllerCompat.getMediaController(this)?.unregisterCallback(controllerCallback)
             mediaBrowser.disconnect()
+            this.unregisterReceiver(mCreateSleepTimerBroadcastReceiver)
             //tts.destroy()
         } catch (e: Exception) {
         }
@@ -296,6 +294,11 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
 
         try {
             val mediaController = MediaControllerCompat.getMediaController(this)
+            mCreateSleepTimerBroadcastReceiver= SleepTImerBroadcastReceiver(mediaController)
+            this.registerReceiver(
+                mCreateSleepTimerBroadcastReceiver,
+                IntentFilter(getString(R.string.sleep_timer_broadcast))
+            )
             mediaController.registerCallback(controllerCallback)
         } catch (e: Exception) {
         }
@@ -678,9 +681,16 @@ class MainActivity: AppCompatActivity() ,ReviewDialogFragment.ReviewDialogFragme
     override fun onDoReviewButtonClick() {
         goToUrl("https://play.google.com/store/apps/details?id=com.yamacrypt.webaudionovel")
     }
-
+    private var mCreateSleepTimerBroadcastReceiver: SleepTImerBroadcastReceiver? = null
     override fun onResume() {
         super.onResume()
+
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        //this.unregisterReceiver(mCreateSleepTimerBroadcastReceiver)
     }
 
     fun getNowDate(): String {

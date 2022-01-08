@@ -2,7 +2,8 @@
     <string name="app_name">Listen-Webnovel </string>
     <string name="title_home">Library</string>
     <string name="title_dashboard">Search</string>
-    <string name="file_change_broadcast">com.yamacrypt.webaudionovel.ui.library.file_change_broadcast</string>
+    <string name="file_change_broadcast" translatable="false">com.yamacrypt.webaudionovel.ui.library.file_change_broadcast</string>
+    <string name="sleep_timer_broadcast" translatable="false">com.yamacrypt.webaudionovel.sleep_timer</string>
     <string name="change_speed">PlayingSpeed</string>
     <string name="change_pitch">Pitch</string>
     <string name="change_language">Speaking Language</string>
@@ -21,4 +22,5 @@
     <string name="isTitleSpeaking">Reading out the title</string>
     <string name="buttonMode">Change of Function Behavior</string>
     <string name="deleteText">delete</string>
+    <string name="sleep_reset">reset</string>
 </resources>
